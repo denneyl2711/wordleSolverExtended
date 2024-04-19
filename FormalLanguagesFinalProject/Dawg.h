@@ -13,12 +13,20 @@ public:
 	DawgNode() {
 	}
 
+	DawgNode(char letter) {
+		letters.push_back(letter);
+	}
+
 	void addParent(DawgNode* node) {
 		parents.push_back(node);
 	}
 
 	void addChild(DawgNode* node) {
 		children.push_back(node);
+	}
+
+	void addChild(char letter) {
+		children.push_back(new DawgNode(letter));
 	}
 
 	int getNumParents() {

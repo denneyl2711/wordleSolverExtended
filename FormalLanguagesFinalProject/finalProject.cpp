@@ -1,6 +1,9 @@
 #include <iostream>
+#include "Dawg.h"
 using namespace std;
 int main() {
-	cout << "Works by some miracle (hopefully)" << endl;
+	DawgNode node;
+
+	node.addChild('k');
 	return 0;
 }

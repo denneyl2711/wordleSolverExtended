@@ -21,12 +21,18 @@ public:
 		parents.push_back(node);
 	}
 
-	void addChild(DawgNode* node) {
+	DawgNode* addChild(DawgNode* node) {
 		children.push_back(node);
+		node->addParent(this);
+		return node;
 	}
 
-	void addChild(char letter) {
-		children.push_back(new DawgNode(letter));
+
+	DawgNode* addChild(char letter) {
+		DawgNode* newNode = new DawgNode(letter);
+		children.push_back(newNode);
+		newNode->addParent(this);
+		return newNode;
 	}
 
 	int getNumParents() {
@@ -60,8 +66,17 @@ public:
 
 		return false;
 	}
+	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
+		os << "DawgNode value: ";
+		for (int i = 0; i < obj.getLetters().size(); i++) {
+			os << obj.getLetters().at(i);
+		}
+
+		return os;
+	}
 
 };
+
 
 class Dawg {
 private:
@@ -78,12 +93,12 @@ private:
 	//simplify the DAWG
 	void reduce();
 
-	void addWord(string word) {
-	}
+	//void addWord(string word) {
+	//}
 
 	//if the user enters "cats" and "cat" is in the DAWG, then "cat" will be returned
-	string findPrefix(string word) {
+	/*string findPrefix(string word) {
 
-	}
+	}*/
 
 };

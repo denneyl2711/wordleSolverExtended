@@ -6,7 +6,7 @@ using namespace std;
 class DawgNode;
 
 class Edge {
-private: 
+private:
 	char letter;
 	DawgNode* start;
 	DawgNode* destination;
@@ -34,8 +34,6 @@ public:
 	DawgNode* getDestination() {
 		return destination;
 	}
-
-
 };
 
 
@@ -58,7 +56,6 @@ public:
 		this->terminal = terminal;
 	}
 
-
 	void addParent(DawgNode* node) {
 		Edge* edge = new Edge(' ', this, node);
 		parents.push_back(edge);
@@ -66,12 +63,11 @@ public:
 
 	/*DawgNode* addChild(DawgNode* node) {
 		Edge* edge = new Edge(' ', this, node);
-		
+
 		children.push_back(node);
 		node->addParent(this);
 		return node;
 	}*/
-
 
 	DawgNode* addChild(char letter) {
 		DawgNode* newNode = new DawgNode();
@@ -105,7 +101,6 @@ public:
 		return nodes;
 	}
 
-
 	vector<Edge*> getParentsEdges() const {
 		return parents;
 	}
@@ -119,7 +114,6 @@ public:
 		}
 
 		vector <DawgNode*> vectorNodes(nodes.begin(), nodes.end());
-		
 
 		return vectorNodes;
 	}
@@ -130,7 +124,7 @@ public:
 			if (child->getLetter() == letter) {
 				return true;
 			}
-			
+
 		}
 
 		return false;
@@ -155,7 +149,6 @@ public:
 
 		return os;
 	}
-
 };
 
 
@@ -163,12 +156,12 @@ class Dawg {
 private:
 	DawgNode* root;
 	vector<string> wordList;
+
 public:
 	Dawg(vector<string> wordList) {
 		this->wordList = wordList;
 		root = new DawgNode();
 	}
-
 
 	DawgNode* getRoot() {
 		return root;
@@ -190,9 +183,6 @@ public:
 	//simplify the DAWG
 	void reduce() {
 	}
-
-	//void addWord(string word) {
-	//}
 
 	//if the user enters "cats" and "cat" is in the DAWG, then "cat" will be returned
 	string findPrefixString(string word) {
@@ -232,16 +222,13 @@ public:
 				prefix = "";
 			}
 		}
-		if (node == root) {
+
+		for (Edge* edge : node->getChildEdges()) {
+			node = edge->getDestination();
+			prefix = prefix + edge->getLetter();
+			printWords(node, prefix);
 			prefix = "";
 		}
-		for (Edge* edge : node->getChildEdges()) {
-				node = edge->getDestination();
-				prefix = prefix + edge->getLetter();
-				printWords(node, prefix);
-				
-		}
-		
 	}
 
 };

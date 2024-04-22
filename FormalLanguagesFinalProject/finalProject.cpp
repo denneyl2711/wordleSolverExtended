@@ -2,34 +2,41 @@
 #include "Dawg.h"
 using namespace std;
 int main() {
-	DawgNode* nodeStart = new DawgNode;
+
+	//testing addChild
+	/*DawgNode* nodeStart = new DawgNode;
 	DawgNode* nodeC = nodeStart->addChild('c');
 	DawgNode* nodeR = nodeC->addChild('r');
 	DawgNode* nodeA = nodeR->addChild('a');
 	DawgNode* nodeZ = nodeA->addChild('z');
-	DawgNode* nodeE = nodeZ->addChild('e');
+	DawgNode* nodeE = nodeZ->addChild('e');*/
+	//----------------------------------------------------------------------------------
 
-	vector <string> words = { "cat", "fact", "facts", "facet", "facets" };
+	vector <string> words = { "cat", "fact", "facts", "facet", "facets", "great", "janky", "welds"};
 	Dawg dawg1(words);
 	dawg1.addWord("cat");
-	//cout << "test" << endl;
 	dawg1.addWord("facts");
-	string pre = dawg1.findPrefixString("cats");
-	/*cout << *nodeA << endl;
-	cout << *(dawg1.findPrefixNode("facet")) << endl;
-	cout << dawg1.getRoot()->hasEdge('a') << endl;
-	cout << "Root "<< * (dawg1.getRoot()) << endl;
+	dawg1.addWord("great");
+	dawg1.addWord("janky");
+	dawg1.addWord("welds");
 
-	cout << "Prefix " << pre << endl;
+	//testing prefix-getting
+	/*string pre = dawg1.findPrefixString("cats");
+	cout << "Prefix is " << pre << endl;*/
 
+	//testing printWords()
+	DawgNode* root = dawg1.getRoot();
+	dawg1.printWords(root, "");
+	cout << "Root --->" <<  * root << endl;
 
-	cout << nodeZ->getNumChildren() << endl;*/
+	DawgNode* beginCat = root->getEdge('c')->getDestination();
+	cout << "Node after root (cat path) is: " << *beginCat << endl;
+	
+	DawgNode* beginFacts = root->getEdge('f')->getDestination();
+	cout << "Node after root (facts path) is: " << *beginFacts << endl;
 
-	dawg1.addWord("cats");
-	dawg1.printWords(dawg1.getRoot(), "");
-	cout << *(dawg1.getRoot()) << endl;
-	cout << "End test" << endl;
-	cout << "nothing changed" << endl;
+	cout << "Works now (by some miracle)" << endl;
+
 
 	return 0;
 }

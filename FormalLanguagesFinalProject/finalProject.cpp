@@ -2,15 +2,14 @@
 #include "Dawg.h"
 using namespace std;
 int main() {
-	DawgNode node;
+	DawgNode* nodeStart = new DawgNode;
+	DawgNode* nodeC = nodeStart->addChild('c');
+	DawgNode* nodeR = nodeC->addChild('r');
+	DawgNode* nodeA = nodeR->addChild('a');
+	DawgNode* nodeZ = nodeA->addChild('z');
+	DawgNode* nodeE = nodeZ->addChild('e');
 
-
-	DawgNode* childNode = node.addChild('k');
-	DawgNode* nodeTest = node.getChildren().at(0);
-	cout << *nodeTest << endl;
-	cout << *(childNode->getParents().at(0)) << endl;
-	cout << node.getNumChildren() << endl;
-	cout << childNode->getNumParents() << endl;
+	cout << nodeZ->getNumChildren() << endl;
 
 	return 0;
 }

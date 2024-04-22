@@ -1,36 +1,72 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include<set>
 using namespace std;
+class DawgNode;
+
+class Edge {
+private: 
+	char letter;
+	DawgNode* start;
+	DawgNode* destination;
+public:
+	Edge(char letter, DawgNode* parent, DawgNode* child) {
+		this->letter = letter;
+		this->start = parent;
+		this->destination = child;
+	}
+
+	Edge(DawgNode* parent, DawgNode* child) {
+		this->letter = ' ';
+		this->start = parent;
+		this->destination = child;
+	}
+
+	char getLetter() {
+		return letter;
+	}
+
+	/*DawgNode* getStart() {
+		return start;
+	}*/
+
+	DawgNode* getDestination() {
+		return destination;
+	}
+
+
+};
+
 
 class DawgNode {
 private:
-	vector<DawgNode*> parents;
-	vector<char> letters;
-	vector<DawgNode*> children;
+	vector<Edge*> parents;
+	vector<Edge*> children;
 
 public:
 	DawgNode() {
 	}
 
-	DawgNode(char letter) {
-		letters.push_back(letter);
-	}
 
 	void addParent(DawgNode* node) {
-		parents.push_back(node);
+		Edge* edge = new Edge(' ', this, node);
+		parents.push_back(edge);
 	}
 
-	DawgNode* addChild(DawgNode* node) {
+	/*DawgNode* addChild(DawgNode* node) {
+		Edge* edge = new Edge(' ', this, node);
+		
 		children.push_back(node);
 		node->addParent(this);
 		return node;
-	}
+	}*/
 
 
 	DawgNode* addChild(char letter) {
-		DawgNode* newNode = new DawgNode(letter);
-		children.push_back(newNode);
+		DawgNode* newNode = new DawgNode();
+		Edge* edge = new Edge(letter, this, newNode);
+		children.push_back(edge);
 		newNode->addParent(this);
 		return newNode;
 	}
@@ -43,33 +79,57 @@ public:
 		return children.size();
 	}
 
-	vector<DawgNode*> getChildren() const {
+	//vector of edges
+	vector<Edge*> getChildEdges() const {
 		return children;
 	}
 
-	vector<DawgNode*> getParents() const {
+	//set of dawg nodes
+	set<DawgNode*> getChildrenNodes() const {
+		set <DawgNode*> nodes;
+
+		for (Edge* child : children) {
+			nodes.insert(child->getDestination());
+		}
+
+		return nodes;
+	}
+
+
+	vector<Edge*> getParentsEdges() const {
 		return parents;
 	}
 
-	vector<char> getLetters()const {
-		return letters;
+	//set of dawg nodes
+	vector<DawgNode*> getParentNodes() const {
+		set <DawgNode*> nodes;
+
+		for (Edge* parent : parents) {
+			nodes.insert(parent->getDestination());
+		}
+
+		vector <DawgNode*> vectorNodes(nodes.begin(), nodes.end());
+		
+
+		return vectorNodes;
 	}
 
-	bool hasChild(char letter) {
-		for (DawgNode* child : children) {
-			for (char childLetter : child->getLetters()) {
-				if (childLetter == letter) {
-					return true;
-				}
+
+	bool hasEdge(char letter) {
+		for (Edge* child : children) {
+			if (child->getLetter() == letter) {
+				return true;
 			}
+			
 		}
 
 		return false;
 	}
 	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
 		os << "DawgNode value: ";
-		for (int i = 0; i < obj.getLetters().size(); i++) {
-			os << obj.getLetters().at(i);
+		auto children = obj.getChildEdges();
+		for (int i = 0; i < children.size(); i++) {
+			os << children.at(i)->getLetter();
 		}
 
 		return os;

@@ -11,10 +11,10 @@ private:
 	DawgNode* start;
 	DawgNode* destination;
 public:
-	Edge(char letter, DawgNode* parent, DawgNode* child) {
+	Edge(char letter, DawgNode* start, DawgNode* destination) {
 		this->letter = letter;
-		this->start = parent;
-		this->destination = child;
+		this->start = start;
+		this->destination = destination;
 	}
 
 	Edge(DawgNode* parent, DawgNode* child) {
@@ -43,9 +43,19 @@ class DawgNode {
 private:
 	vector<Edge*> parents;
 	vector<Edge*> children;
+	bool terminal;
 
 public:
 	DawgNode() {
+		terminal = false;
+	}
+
+	bool getTerminal() {
+		return terminal;
+	}
+
+	void setTerminal(bool terminal) {
+		this->terminal = terminal;
 	}
 
 
@@ -125,6 +135,17 @@ public:
 
 		return false;
 	}
+
+	Edge* getEdge(char letter) {
+		for (Edge* child : children) {
+			if (child->getLetter() == letter) {
+				return child;
+			}
+
+		}
+		return nullptr;
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
 		os << "DawgNode value: ";
 		auto children = obj.getChildEdges();
@@ -141,24 +162,86 @@ public:
 class Dawg {
 private:
 	DawgNode* root;
-	vector<string> alphabet;
-
-	Dawg(vector<string> alphabet) {
-		this->alphabet = alphabet;
+	vector<string> wordList;
+public:
+	Dawg(vector<string> wordList) {
+		this->wordList = wordList;
 		root = new DawgNode();
 	}
 
-	void addWord(string word);
+
+	DawgNode* getRoot() {
+		return root;
+	}
+
+	//first implementation just adds all words to seperate branches (bad)
+	void addWord(string word) {
+		DawgNode* currentNode = findPrefixNode(word);
+		int lengthPre = findPrefixString(word).length();
+		//adds word to graph as seperate leaf
+		for (int i = lengthPre; i < word.length(); i++) {
+			currentNode = currentNode->addChild(word.at(i));
+		}
+
+		currentNode->setTerminal(true);
+
+	}
 
 	//simplify the DAWG
-	void reduce();
+	void reduce() {
+	}
 
 	//void addWord(string word) {
 	//}
 
 	//if the user enters "cats" and "cat" is in the DAWG, then "cat" will be returned
-	/*string findPrefix(string word) {
+	string findPrefixString(string word) {
+		DawgNode* currentNode = root;
+		string pre = "";
+		for (int i = 0; i < word.length(); i++) {
+			Edge* edge = currentNode->getEdge(word.at(i));
+			if (edge == nullptr) {
+				break;
+			}
+			else {
+				pre += word.at(i);
+				currentNode = edge->getDestination();
+			}
+		}
+		return pre;
+	}
 
-	}*/
+	DawgNode* findPrefixNode(string word) {
+		DawgNode* currentNode = root;
+		for (int i = 0; i < word.length(); i++) {
+			Edge* edge = currentNode->getEdge(word.at(i));
+			if (edge == nullptr) {
+				break;
+			}
+			else {
+				currentNode = edge->getDestination();
+			}
+		}
+		return currentNode;
+	}
+
+	void printWords(DawgNode* node, string prefix) {
+		if (node->getTerminal()) {
+			cout << prefix << endl;
+			if (node->getNumChildren() == 0) {
+				prefix = "";
+			}
+		}
+		if (node == root) {
+			prefix = "";
+		}
+		for (Edge* edge : node->getChildEdges()) {
+				node = edge->getDestination();
+				prefix = prefix + edge->getLetter();
+				printWords(node, prefix);
+				
+		}
+		
+	}
 
 };

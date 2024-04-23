@@ -157,6 +157,20 @@ private:
 	DawgNode* root;
 	vector<string> wordList;
 
+	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) {
+		if (node->getTerminal()) {
+			wordList.push_back(prefix);
+		}
+
+		string oldPrefix = prefix;
+		for (Edge* edge : node->getChildEdges()) {
+			node = edge->getDestination();
+			prefix += edge->getLetter();
+			getWordsRec(node, prefix, wordList);
+			prefix = oldPrefix;
+		}
+	}
+
 public:
 	Dawg(vector<string> wordList) {
 		this->wordList = wordList;
@@ -215,7 +229,23 @@ public:
 		return currentNode;
 	}
 
-	void printWords(DawgNode* node, string prefix) {
+	vector<string> getWords() {
+		vector<string> words;
+
+		//pass words by reference
+		getWordsRec(root, "", words);
+
+		return words;
+	}
+
+	void printWords() {
+		vector<string> words = getWords();
+		for (string word : words) {
+			cout << word << endl;
+		}
+	}
+
+	/*void printWordsRec(DawgNode* node, string prefix) {
 		if (node->getTerminal()) {
 			cout << prefix << endl;
 			if (node->getNumChildren() == 0) {
@@ -227,9 +257,9 @@ public:
 		for (Edge* edge : node->getChildEdges()) {
 			node = edge->getDestination();
 			prefix += edge->getLetter();
-			printWords(node, prefix);
+			printWordsRec(node, prefix);
 			prefix = oldPrefix;
 		}
-	}
+	}*/
 
 };

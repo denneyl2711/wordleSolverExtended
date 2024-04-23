@@ -25,7 +25,8 @@ int main() {
 
 	//testing printWords()
 	DawgNode* root = dawg1.getRoot();
-	dawg1.printWords(root, "");
+	dawg1.printWords();
+
 	cout << "Root --->" <<  * root << endl;
 
 	DawgNode* beginCat = root->getEdge('c')->getDestination();
@@ -34,7 +35,7 @@ int main() {
 	DawgNode* beginFacts = root->getEdge('f')->getDestination();
 	cout << "Node after root (facts path) is: " << *beginFacts << endl;
 
-	cout << "Works now (by some miracle)" << endl;
+	cout << "Works now (by some miracleeee)" << endl;
 
 
 	return 0;

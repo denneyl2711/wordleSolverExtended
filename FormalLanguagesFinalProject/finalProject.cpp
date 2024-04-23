@@ -14,11 +14,10 @@ int main() {
 
 	vector <string> words = { "cat", "fact", "facts", "facet", "facets", "great", "janky", "welds"};
 	Dawg dawg1(words);
-	dawg1.addWord("cat");
-	dawg1.addWord("facts");
-	dawg1.addWord("great");
-	dawg1.addWord("janky");
-	dawg1.addWord("welds");
+	
+	for (string word : words) {
+		dawg1.addWord(word);
+	}
 
 	//testing prefix-getting
 	/*string pre = dawg1.findPrefixString("cats");

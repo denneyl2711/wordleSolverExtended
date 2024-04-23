@@ -223,11 +223,12 @@ public:
 			}
 		}
 
+		string oldPrefix = prefix;
 		for (Edge* edge : node->getChildEdges()) {
 			node = edge->getDestination();
-			prefix = prefix + edge->getLetter();
+			prefix += edge->getLetter();
 			printWords(node, prefix);
-			prefix = "";
+			prefix = oldPrefix;
 		}
 	}
 

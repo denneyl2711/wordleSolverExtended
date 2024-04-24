@@ -35,7 +35,7 @@ int main() {
 	DawgNode* beginFacts = root->getEdge('f')->getDestination();
 	cout << "Node after root (facts path) is: " << *beginFacts << endl;
 
-	cout << "Works now (by some miracleeee)" << endl;
+	cout << "Works now (by some miracleeee) (no linker errors now)" << endl;
 
 
 	return 0;

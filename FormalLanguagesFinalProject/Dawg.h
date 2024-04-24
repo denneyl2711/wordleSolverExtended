@@ -1,8 +1,13 @@
+#ifndef DAWG_H
+#define DAWG_H
+
 #include <iostream>
 #include <vector>
 #include <string>
-#include<set>
+#include <set>
+
 using namespace std;
+
 class DawgNode;
 
 class Edge {
@@ -11,31 +16,14 @@ private:
 	DawgNode* start;
 	DawgNode* destination;
 public:
-	Edge(char letter, DawgNode* start, DawgNode* destination) {
-		this->letter = letter;
-		this->start = start;
-		this->destination = destination;
-	}
+	Edge(char letter, DawgNode* start, DawgNode* destination);
 
-	Edge(DawgNode* parent, DawgNode* child) {
-		this->letter = ' ';
-		this->start = parent;
-		this->destination = child;
-	}
+	Edge(DawgNode* parent, DawgNode* child);
 
-	char getLetter() {
-		return letter;
-	}
+	char getLetter() { return letter; }
 
-	/*DawgNode* getStart() {
-		return start;
-	}*/
-
-	DawgNode* getDestination() {
-		return destination;
-	}
+	DawgNode* getDestination() { return destination; }
 };
-
 
 class DawgNode {
 private:
@@ -44,222 +32,58 @@ private:
 	bool terminal;
 
 public:
-	DawgNode() {
-		terminal = false;
-	}
+	DawgNode();
 
-	bool getTerminal() {
-		return terminal;
-	}
+	bool getTerminal() { return terminal; }
 
-	void setTerminal(bool terminal) {
-		this->terminal = terminal;
-	}
+	void setTerminal(bool terminal) { this->terminal = terminal; }
 
-	void addParent(DawgNode* node) {
-		Edge* edge = new Edge(' ', this, node);
-		parents.push_back(edge);
-	}
+	void addParent(DawgNode* node);
 
-	/*DawgNode* addChild(DawgNode* node) {
-		Edge* edge = new Edge(' ', this, node);
+	DawgNode* addChild(char letter);
 
-		children.push_back(node);
-		node->addParent(this);
-		return node;
-	}*/
+	int getNumParents() { return parents.size(); }
 
-	DawgNode* addChild(char letter) {
-		DawgNode* newNode = new DawgNode();
-		Edge* edge = new Edge(letter, this, newNode);
-		children.push_back(edge);
-		newNode->addParent(this);
-		return newNode;
-	}
+	int getNumChildren() { return children.size(); }
 
-	int getNumParents() {
-		return parents.size();
-	}
+	vector<Edge*> getChildEdges() const { return children; }
 
-	int getNumChildren() {
-		return children.size();
-	}
+	set<DawgNode*> getChildrenNodes() const;
 
-	//vector of edges
-	vector<Edge*> getChildEdges() const {
-		return children;
-	}
+	vector<Edge*> getParentsEdges() const { return parents; }
 
-	//set of dawg nodes
-	set<DawgNode*> getChildrenNodes() const {
-		set <DawgNode*> nodes;
+	vector<DawgNode*> getParentNodes() const;
 
-		for (Edge* child : children) {
-			nodes.insert(child->getDestination());
-		}
+	bool hasEdge(char letter);
 
-		return nodes;
-	}
+	Edge* getEdge(char letter);
 
-	vector<Edge*> getParentsEdges() const {
-		return parents;
-	}
-
-	//set of dawg nodes
-	vector<DawgNode*> getParentNodes() const {
-		set <DawgNode*> nodes;
-
-		for (Edge* parent : parents) {
-			nodes.insert(parent->getDestination());
-		}
-
-		vector <DawgNode*> vectorNodes(nodes.begin(), nodes.end());
-
-		return vectorNodes;
-	}
-
-
-	bool hasEdge(char letter) {
-		for (Edge* child : children) {
-			if (child->getLetter() == letter) {
-				return true;
-			}
-
-		}
-
-		return false;
-	}
-
-	Edge* getEdge(char letter) {
-		for (Edge* child : children) {
-			if (child->getLetter() == letter) {
-				return child;
-			}
-
-		}
-		return nullptr;
-	}
-
-	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
-		os << "DawgNode value: ";
-		auto children = obj.getChildEdges();
-		for (int i = 0; i < children.size(); i++) {
-			os << children.at(i)->getLetter();
-		}
-
-		return os;
-	}
+	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj);
 };
-
 
 class Dawg {
 private:
 	DawgNode* root;
 	vector<string> wordList;
 
-	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) {
-		if (node->getTerminal()) {
-			wordList.push_back(prefix);
-		}
-
-		string oldPrefix = prefix;
-		for (Edge* edge : node->getChildEdges()) {
-			node = edge->getDestination();
-			prefix += edge->getLetter();
-			getWordsRec(node, prefix, wordList);
-			prefix = oldPrefix;
-		}
-	}
+	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList);
 
 public:
-	Dawg(vector<string> wordList) {
-		this->wordList = wordList;
-		root = new DawgNode();
-	}
+	Dawg(vector<string> wordList);
 
-	DawgNode* getRoot() {
-		return root;
-	}
+	DawgNode* getRoot() { return root; }
 
-	//first implementation just adds all words to seperate branches (bad)
-	void addWord(string word) {
-		DawgNode* currentNode = findPrefixNode(word);
-		int lengthPre = findPrefixString(word).length();
-		//adds word to graph as seperate leaf
-		for (int i = lengthPre; i < word.length(); i++) {
-			currentNode = currentNode->addChild(word.at(i));
-		}
+	void addWord(string word);
 
-		currentNode->setTerminal(true);
+	void reduce();
 
-	}
+	string findPrefixString(string word);
 
-	//simplify the DAWG
-	void reduce() {
-	}
+	DawgNode* findPrefixNode(string word);
 
-	//if the user enters "cats" and "cat" is in the DAWG, then "cat" will be returned
-	string findPrefixString(string word) {
-		DawgNode* currentNode = root;
-		string pre = "";
-		for (int i = 0; i < word.length(); i++) {
-			Edge* edge = currentNode->getEdge(word.at(i));
-			if (edge == nullptr) {
-				break;
-			}
-			else {
-				pre += word.at(i);
-				currentNode = edge->getDestination();
-			}
-		}
-		return pre;
-	}
+	vector<string> getWords();
 
-	DawgNode* findPrefixNode(string word) {
-		DawgNode* currentNode = root;
-		for (int i = 0; i < word.length(); i++) {
-			Edge* edge = currentNode->getEdge(word.at(i));
-			if (edge == nullptr) {
-				break;
-			}
-			else {
-				currentNode = edge->getDestination();
-			}
-		}
-		return currentNode;
-	}
-
-	vector<string> getWords() {
-		vector<string> words;
-
-		//pass words by reference
-		getWordsRec(root, "", words);
-
-		return words;
-	}
-
-	void printWords() {
-		vector<string> words = getWords();
-		for (string word : words) {
-			cout << word << endl;
-		}
-	}
-
-	/*void printWordsRec(DawgNode* node, string prefix) {
-		if (node->getTerminal()) {
-			cout << prefix << endl;
-			if (node->getNumChildren() == 0) {
-				prefix = "";
-			}
-		}
-
-		string oldPrefix = prefix;
-		for (Edge* edge : node->getChildEdges()) {
-			node = edge->getDestination();
-			prefix += edge->getLetter();
-			printWordsRec(node, prefix);
-			prefix = oldPrefix;
-		}
-	}*/
-
+	void printWords();
 };
+
+#endif // DAWG_H

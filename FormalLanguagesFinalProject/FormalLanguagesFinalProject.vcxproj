@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Dawg.cpp" />
     <ClCompile Include="Dawg.h" />
     <ClCompile Include="finalProject.cpp" />
   </ItemGroup>

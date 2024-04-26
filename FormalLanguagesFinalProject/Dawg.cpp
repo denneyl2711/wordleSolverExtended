@@ -91,8 +91,10 @@ std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
 Dawg::Dawg(vector<string> wordList) {
     this->wordList = wordList;
     root = new DawgNode();
+    lastAdded = nullptr;
 }
 
+//words are passed in, in reverse alphabetical order for this method
 void Dawg::addWord(string word) {
     DawgNode* currentNode = findPrefixNode(word);
     int lengthPre = findPrefixString(word).length();
@@ -101,10 +103,28 @@ void Dawg::addWord(string word) {
     }
 
     currentNode->setTerminal(true);
+    //reduce(currentNode)
 }
 
-void Dawg::reduce() {
+void Dawg::reduce(DawgNode* current) {
     // Not implemented yet
+    if (lastAdded == nullptr) {
+        return;
+    }
+    vector <string> lastAddedRight;
+    vector <string> currentRight;
+    this->getWordsRec(lastAdded, "", lastAddedRight);
+    this->getWordsRec(current, "", currentRight);
+
+    if (lastAddedRight == currentRight) {
+        //edge to be repointed 
+        Edge* edge = current->getParentsEdges().at(0);
+        edge->setDestination(lastAdded);
+        lastAdded->addParent(current);
+        //delete old node
+    }
+
+    //set last Added
 }
 
 string Dawg::findPrefixString(string word) {

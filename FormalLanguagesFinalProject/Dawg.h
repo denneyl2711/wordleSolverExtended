@@ -19,6 +19,10 @@ public:
 	Edge(char letter, DawgNode* start, DawgNode* destination);
 
 	Edge(DawgNode* parent, DawgNode* child);
+	
+	void setDestination(DawgNode* node) { this->destination = node; }
+
+	void setStart(DawgNode* node) { this->start = node; }
 
 	char getLetter() { return letter; }
 
@@ -58,6 +62,7 @@ public:
 
 	Edge* getEdge(char letter);
 
+
 	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj);
 };
 
@@ -65,6 +70,7 @@ class Dawg {
 private:
 	DawgNode* root;
 	vector<string> wordList;
+	DawgNode* lastAdded;
 
 	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList);
 
@@ -75,7 +81,7 @@ public:
 
 	void addWord(string word);
 
-	void reduce();
+	void reduce(DawgNode* current);
 
 	string findPrefixString(string word);
 

@@ -35,7 +35,19 @@ int main() {
 	DawgNode* beginFacts = root->getEdge('f')->getDestination();
 	cout << "Node after root (facts path) is: " << *beginFacts << endl;
 
-	cout << "Works now (by some miracleeee) (no linker errors now)" << endl;
+	//Testing destructor
+	cout << "Testing destructor ---------------------> (open task manager)" << endl;
+	cout << "Creating and destroying many many dawgs (this will take several minutes to complete)" << endl;
+	for (int i = 0; i < 1000000; ++i) {
+		Dawg dawg2(words);
+
+		for (string word : words) {
+			dawg2.addWord(word);
+		}
+	}
+	cout << "Done creating and deleting items" << endl;
+
+	cout << "Works now (by some miracleeee) (no linker errors now hopefully)" << endl;
 
 
 	return 0;

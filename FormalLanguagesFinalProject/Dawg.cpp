@@ -175,6 +175,27 @@ void Dawg::printWords()
     }
 }
 
+void Dawg::eraseNode(DawgNode* node)
+{
+    //cout << *node << endl;
+
+    for (Edge* edge : node->getChildEdges()) {
+        DawgNode* childNode = edge->getDestination();
+
+        //do not delete the child node if it has multiple parents
+        //this lets the function delete single branches/words instead of entire suffixes
+        if (childNode->getNumParents() <= 1) {
+            eraseNode(childNode);
+        }
+        delete edge;
+        
+    }
+    for (Edge* parentEdge : node->getParentsEdges()) {
+        delete parentEdge;
+    }
+    delete node;
+}
+
 void Dawg::getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) {
     if (node->getTerminal()) {
         wordList.push_back(prefix);

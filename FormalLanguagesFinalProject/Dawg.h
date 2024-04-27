@@ -77,6 +77,8 @@ private:
 public:
 	Dawg(vector<string> wordList);
 
+	~Dawg() { eraseNode(root); if (lastAdded != nullptr){delete lastAdded; } }
+
 	DawgNode* getRoot() { return root; }
 
 	void addWord(string word);
@@ -90,6 +92,9 @@ public:
 	vector<string> getWords();
 
 	void printWords();
+
+	//delete the passed-in node and proceeding nodes
+	void eraseNode(DawgNode*);
 };
 
 #endif // DAWG_H

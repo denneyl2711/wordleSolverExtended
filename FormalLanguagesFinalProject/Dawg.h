@@ -69,19 +69,24 @@ public:
 class Dawg {
 private:
 	DawgNode* root;
-	vector<string> wordList;
 	DawgNode* lastAdded;
 
-	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList);
+	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const;
 
 public:
 	Dawg(vector<string> wordList);
 
 	~Dawg() { eraseNode(root); if (lastAdded != nullptr){delete lastAdded; } }
 
+	Dawg(const Dawg& dawg);
+
+	Dawg& operator= (const Dawg& other);
+
 	DawgNode* getRoot() { return root; }
 
 	void addWord(string word);
+
+	void addWords(vector<string> words);
 
 	void reduce(DawgNode* current);
 
@@ -89,9 +94,9 @@ public:
 
 	DawgNode* findPrefixNode(string word);
 
-	vector<string> getWords();
+	vector<string> getWords() const;
 
-	void printWords();
+	void printWords() const;
 
 	//delete the passed-in node and proceeding nodes
 	void eraseNode(DawgNode*);

@@ -1,4 +1,5 @@
 #include "Dawg.h"
+#include <algorithm>
 
 Edge::Edge(char letter, DawgNode* start, DawgNode* destination) {
     this->letter = letter;
@@ -89,9 +90,28 @@ std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
 //begin Dawg
 
 Dawg::Dawg(vector<string> wordList) {
-    this->wordList = wordList;
-    root = new DawgNode();
     lastAdded = nullptr;
+    addWords(wordList);
+}
+
+Dawg::Dawg(const Dawg& dawg)
+{
+    lastAdded = nullptr;
+    this->addWords(dawg.getWords());
+}
+
+Dawg& Dawg::operator=(const Dawg& other)
+{
+    if (this != &other) {
+        this->eraseNode(root);
+
+        root = new DawgNode();
+        lastAdded = nullptr;
+
+        this->addWords(other.getWords());
+    }
+
+    return *this;
 }
 
 //words are passed in, in reverse alphabetical order for this method
@@ -104,6 +124,20 @@ void Dawg::addWord(string word) {
 
     currentNode->setTerminal(true);
     //reduce(currentNode)
+}
+
+void Dawg::addWords(vector<string> words)
+{
+    if (root == nullptr) {
+        root = new DawgNode();
+    }
+    //sort words in reverse order before adding them
+    //this ensures greater efficiency when adding nodes
+    std::sort(words.begin(), words.end(), std::greater<>());
+
+    for (string word : words) {
+        addWord(word);
+    }
 }
 
 void Dawg::reduce(DawgNode* current) {
@@ -157,7 +191,7 @@ DawgNode* Dawg::findPrefixNode(string word) {
     return currentNode;
 }
 
-vector<string> Dawg::getWords()
+vector<string> Dawg::getWords() const
 {
     vector<string> words;
 
@@ -167,7 +201,7 @@ vector<string> Dawg::getWords()
     return words;
 }
 
-void Dawg::printWords()
+void Dawg::printWords() const
 {
     vector<string> words = getWords();
     for (string word : words) {
@@ -196,7 +230,7 @@ void Dawg::eraseNode(DawgNode* node)
     delete node;
 }
 
-void Dawg::getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) {
+void Dawg::getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const {
     if (node->getTerminal()) {
         wordList.push_back(prefix);
     }

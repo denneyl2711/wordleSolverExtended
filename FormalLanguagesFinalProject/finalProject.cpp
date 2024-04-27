@@ -14,10 +14,6 @@ int main() {
 
 	vector <string> words = { "cat", "fact", "facts", "facet", "facets", "great", "janky", "welds"};
 	Dawg dawg1(words);
-	
-	for (string word : words) {
-		dawg1.addWord(word);
-	}
 
 	//testing prefix-getting
 	/*string pre = dawg1.findPrefixString("cats");
@@ -46,6 +42,19 @@ int main() {
 		}
 	}
 	cout << "Done creating and deleting items" << endl;
+
+
+	{
+		cout << "Testing assignment operator" << endl;
+		Dawg newDawg = dawg1;
+		cout << "Printing words from newDawg" << endl;
+		newDawg.printWords();
+	}
+	//dawg 1 should not be affected (should still print words)
+	cout << "Printing words from original dawg after self assignment" << endl;
+	dawg1 = dawg1;
+	dawg1.printWords();
+
 
 	cout << "Works now (by some miracleeee) (no linker errors now hopefully)" << endl;
 

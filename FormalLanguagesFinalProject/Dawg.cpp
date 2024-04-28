@@ -116,6 +116,10 @@ Dawg& Dawg::operator=(const Dawg& other)
 
 //words are passed in, in reverse alphabetical order for this method
 void Dawg::addWord(string word) {
+    if (root == nullptr) {
+        root = new DawgNode();
+    }
+
     DawgNode* currentNode = findPrefixNode(word);
     int lengthPre = findPrefixString(word).length();
     for (int i = lengthPre; i < word.length(); i++) {
@@ -128,9 +132,6 @@ void Dawg::addWord(string word) {
 
 void Dawg::addWords(vector<string> words)
 {
-    if (root == nullptr) {
-        root = new DawgNode();
-    }
     //sort words in reverse order before adding them
     //this ensures greater efficiency when adding nodes
     std::sort(words.begin(), words.end(), std::greater<>());
@@ -159,6 +160,13 @@ void Dawg::reduce(DawgNode* current) {
     }
 
     //set last Added
+}
+
+DawgNode* Dawg::clear()
+{
+    eraseNode(root);
+    root = new DawgNode();
+    return root;
 }
 
 string Dawg::findPrefixString(string word) {
@@ -206,6 +214,10 @@ void Dawg::printWords() const
     vector<string> words = getWords();
     for (string word : words) {
         cout << word << endl;
+    }
+
+    if (words.size() == 0) {
+        cout << "Empty dawg" << endl;
     }
 }
 

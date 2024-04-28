@@ -73,6 +73,11 @@ private:
 
 	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const;
 
+	void reduce(DawgNode* current);
+
+	//delete the passed-in node and proceeding nodes
+	void eraseNode(DawgNode*);
+
 public:
 	Dawg(vector<string> wordList);
 
@@ -88,7 +93,7 @@ public:
 
 	void addWords(vector<string> words);
 
-	void reduce(DawgNode* current);
+	DawgNode* clear(); //remove all nodes and return a pointer to the new root
 
 	string findPrefixString(string word);
 
@@ -97,9 +102,6 @@ public:
 	vector<string> getWords() const;
 
 	void printWords() const;
-
-	//delete the passed-in node and proceeding nodes
-	void eraseNode(DawgNode*);
 };
 
 #endif // DAWG_H

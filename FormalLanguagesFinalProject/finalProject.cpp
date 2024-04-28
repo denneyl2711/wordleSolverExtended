@@ -31,6 +31,9 @@ int main() {
 	DawgNode* beginFacts = root->getEdge('f')->getDestination();
 	cout << "Node after root (facts path) is: " << *beginFacts << endl;
 
+	dawg1.clear();
+	dawg1.printWords();
+
 	//Testing destructor
 	cout << "Testing destructor ---------------------> (open task manager)" << endl;
 	cout << "Creating and destroying many many dawgs (this will take several minutes to complete)" << endl;

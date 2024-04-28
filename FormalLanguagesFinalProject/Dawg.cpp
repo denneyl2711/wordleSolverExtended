@@ -103,11 +103,7 @@ Dawg::Dawg(const Dawg& dawg)
 Dawg& Dawg::operator=(const Dawg& other)
 {
     if (this != &other) {
-        this->eraseNode(root);
-
-        root = new DawgNode();
-        lastAdded = nullptr;
-
+        this->clear();
         this->addWords(other.getWords());
     }
 
@@ -166,6 +162,7 @@ DawgNode* Dawg::clear()
 {
     eraseNode(root);
     root = new DawgNode();
+    lastAdded = nullptr;
     return root;
 }
 

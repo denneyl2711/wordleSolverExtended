@@ -230,6 +230,10 @@ void Dawg::eraseNode(DawgNode* node)
         if (childNode->getNumParents() <= 1) {
             eraseNode(childNode);
         }
+
+        //TODO: delete child --> parent edge?
+        //I think this would leave suffix nodes thinking they have multiple parents when they actually don't
+
         delete edge;
         
     }

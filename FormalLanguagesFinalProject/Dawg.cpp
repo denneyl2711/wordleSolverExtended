@@ -25,6 +25,16 @@ void DawgNode::addParent(DawgNode* node) {
     parents.push_back(edge);
 }
 
+
+void DawgNode::redirect(DawgNode* node)
+{
+    Edge* edgeReverse = new Edge(' ', node, this);
+    node->parents.push_back(edgeReverse);
+
+    Edge* edge = new Edge(' ', this, node);
+    this->children.push_back(edge);
+}
+
 DawgNode* DawgNode::addChild(char letter) {
     DawgNode* newNode = new DawgNode();
     Edge* edge = new Edge(letter, this, newNode);
@@ -120,11 +130,13 @@ void Dawg::addWord(string word) {
     int lengthPre = findPrefixString(word).length();
     for (int i = lengthPre; i < word.length(); i++) {
         currentNode = currentNode->addChild(word.at(i));
+        lastAdded = currentNode;
     }
-
     currentNode->setTerminal(true);
-    //reduce(currentNode)
+    
+    //reduce(currentNode);
 }
+
 
 void Dawg::addWords(vector<string> words)
 {
@@ -149,10 +161,16 @@ void Dawg::reduce(DawgNode* current) {
 
     if (lastAddedRight == currentRight) {
         //edge to be repointed 
-        Edge* edge = current->getParentsEdges().at(0);
+        /*Edge* edge = current->getParentsEdges().at(0);
         edge->setDestination(lastAdded);
-        lastAdded->addParent(current);
-        //delete old node
+        lastAdded->addParent(current);*/
+        DawgNode* node = current->getParentNodes().back();
+        //delete old edge
+        delete node->getChildEdges().back(); 
+        //redirect edge
+        node->redirect(lastAdded);
+         //delete old node
+        eraseNode(current);
     }
 
     //set last Added
@@ -230,9 +248,13 @@ void Dawg::eraseNode(DawgNode* node)
         if (childNode->getNumParents() <= 1) {
             eraseNode(childNode);
         }
-
-        //TODO: delete child --> parent edge?
-        //I think this would leave suffix nodes thinking they have multiple parents when they actually don't
+        else {
+            for (Edge* parents : childNode->getParentsEdges()) {
+                if (parents->getDestination() == node) {
+                    delete parents;
+                }
+            }
+        }
 
         delete edge;
         

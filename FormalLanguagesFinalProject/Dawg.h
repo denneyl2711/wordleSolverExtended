@@ -40,6 +40,8 @@ public:
 
 	bool getTerminal() { return terminal; }
 
+	void redirect(DawgNode* node);
+
 	void setTerminal(bool terminal) { this->terminal = terminal; }
 
 	void addParent(DawgNode* node);

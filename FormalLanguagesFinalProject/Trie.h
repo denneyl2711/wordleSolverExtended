@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -86,6 +87,12 @@ private:
 	//delete the passed-in node and proceeding nodes
 	void eraseNode(TrieNode*);
 
+	static unordered_map<char, vector<int>> findDuplicates(const string& str);
+
+	void pruneGreenRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
+	void pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
+	void pruneGreyRec(char letter, TrieNode* node);
+
 public:
 	Trie(vector<string> wordList);
 
@@ -115,20 +122,13 @@ public:
 
 	void pruneGreen(char letter, int idx);
 
-	void pruneGreenRec(char letter,int currentIdx, int targetIdx, TrieNode* node);
-
 	void pruneYellow(char letter, int idx);
-
-	void pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 
 	void pruneByIdx(char letter, int idx);
 
 	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 
 	void pruneGrey(char letter);
-
-	void pruneGreyRec(char letter, TrieNode* node);
-
 
 };
 

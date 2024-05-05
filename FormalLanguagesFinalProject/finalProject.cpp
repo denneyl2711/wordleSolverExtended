@@ -77,11 +77,20 @@ int main() {
 	string userGuess;
 	string guessInfo;
 	for (int i = 0; i < 6; ++i) {
+
 		cout << "Enter guess #" << i + 1 << ": ";
 		cin >> userGuess;
 
 		cout << "Enter guess information in form green=Y, yellow=M, grey=N" << endl;
 		cin >> guessInfo;
+
+		//check for bad user input
+		//can add more conditions later
+		if (userGuess.length() != guessInfo.length()) {
+			cout << "Error reading input, please try again" << endl;
+			i--;
+			continue;
+		}
 
 		wordleDawg.prune(guessInfo, userGuess);
 		wordleDawg.printWords();

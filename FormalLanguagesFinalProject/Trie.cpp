@@ -283,15 +283,24 @@ void Trie::printWords() const
 
 void Trie::prune(string guessInfo, string guess)
 {
+    unordered_map<char, vector<int>> duplicates = findDuplicates(guess);
+
     //store guessInfo for double letters and create seperate methods for each case
     //finish yellows functionality
     for (int i = 0; i < guessInfo.length(); i++) {
-        bool doubleLetter = false;
-        for (int k = 0; k < guess.length(); k++) {
-            if (k != i && guess[k] == guess[i]) {
-                doubleLetter = true;
-            }
+
+        //if element is not found, mapElementIr == duplicates.end()
+        //find() returns duplicates.end() (iterator after the last element) if element 
+        //    does not exist in the map
+        auto mapElementItr = duplicates.find(guess[i]);
+        bool hasDuplicates = mapElementItr != duplicates.end();
+
+        /*if (hasDuplicates) {
+            cout << "There are duplicates of " << guess[i] << endl;
         }
+        else {
+            cout << "   There are no duplicates of " << guess[i] << endl;
+        }*/
         if (guessInfo[i] == 'Y') {
             pruneGreen(guess[i], i);
         }
@@ -300,11 +309,58 @@ void Trie::prune(string guessInfo, string guess)
         }
 
         else if (guessInfo[i] == 'N') {
-            if (!doubleLetter) {
+            if (!hasDuplicates) {
                 pruneGrey(guess[i]);
             }
         }
     }
+}
+
+//modified from ChatGPT-produced function
+//returns an unordered map where each element is a letter followed by the indices of duplicates
+//ex. findDuplicates("hello") returns a map with one element: <'h', [2, 3]>
+unordered_map<char, vector<int>> Trie::findDuplicates(const string& str) {
+    unordered_map<char, vector<int>> charIndices;
+
+    // Iterate through the string
+    for (int i = 0; i < str.length(); ++i) {
+        char ch = str[i];
+        // Check if the character is already present
+        if (charIndices.find(ch) != charIndices.end()) {
+            // If yes, mark its index
+            charIndices[ch].push_back(i);
+        }
+        else {
+            // If no, add it to the map with its index
+            charIndices[ch] = vector<int>{ i };
+        }
+    }
+
+    //mildly sloppy but it works
+    //removes elements which only have 1 "duplicate"
+    //ex. without this function, findDuplicates("hello") would contain <'h', [0]>, <'e', [1]>, etc.
+    for (char letter : str) {
+        if (charIndices.find(letter) != charIndices.end()) {
+            auto mapElementVect = charIndices[letter];
+            if (mapElementVect.size() == 1) {
+                charIndices.erase(letter);
+            }
+        }
+    }
+
+    // Print duplicate information
+    /*cout << "Duplicates in the string:" << endl;
+    for (auto& pair : charIndices) {
+        if (pair.second.size() > 1) {
+            cout << pair.first << ": ";
+            for (auto& index : pair.second) {
+                cout << index << " ";
+            }
+            cout << endl;
+        }
+    }*/
+
+    return charIndices;
 }
 
 void Trie::pruneGreen(char letter, int idx)

@@ -74,26 +74,26 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj);
 };
 
-class Dawg {
+class Trie {
 private:
 	DawgNode* root;
 	//DawgNode* lastAdded;
 
 	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const;
 
-	void reduce(DawgNode* current);
+	//void reduce(DawgNode* current);
 
 	//delete the passed-in node and proceeding nodes
 	void eraseNode(DawgNode*);
 
 public:
-	Dawg(vector<string> wordList);
+	Trie(vector<string> wordList);
 
-	~Dawg() { cout << endl << endl << "Destroying dawg " << endl; eraseNode(root); }
+	~Trie() { cout << endl << endl << "Destroying dawg " << endl; eraseNode(root); }
 
-	Dawg(const Dawg& dawg);
+	Trie(const Trie& dawg);
 
-	Dawg& operator= (const Dawg& other);
+	Trie& operator= (const Trie& other);
 
 	DawgNode* getRoot() { return root; }
 
@@ -110,6 +110,26 @@ public:
 	vector<string> getWords() const;
 
 	void printWords() const;
+
+	void prune(string guessInfo, string guess);
+
+	void pruneGreen(char letter, int idx);
+
+	void pruneGreenRec(char letter,int currentIdx, int targetIdx, DawgNode* node);
+
+	void pruneYellow(char letter, int idx);
+
+	void pruneYellowRec(char letter, int currentIdx, int targetIdx, DawgNode* node);
+
+	void pruneByIdx(char letter, int idx);
+
+	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, DawgNode* node);
+
+	void pruneGrey(char letter);
+
+	void pruneGreyRec(char letter, DawgNode* node);
+
+
 };
 
 #endif // DAWG_H

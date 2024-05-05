@@ -1,6 +1,8 @@
 #include <iostream>
+#include <fstream>
 #include "Dawg.h"
 using namespace std;
+std::vector<std::string> readWordsFromFile(const std::string& filename);
 int main() {
 
 	//testing addChild
@@ -14,6 +16,12 @@ int main() {
 	cout << "Runs at all" << endl;
 	//vector <string> words = { "cat", "fact", "facts", "facet", "facets", "great", "janky", "welds"};
 	vector<string> words = { "truce", "spruce", "reduce" };
+	//vector<string> words = readWordsFromFile("wordleWords.txt");
+
+	/*for (string word : words) {
+		cout << word << endl;
+	}*/
+
 	Dawg dawg1(words);
 	cout << "constructed" << endl;
 
@@ -58,8 +66,26 @@ int main() {
 
 
 
-	cout << "Works now (by some miracleeee) (no linker errors now rn frfr)" << endl;
+	cout << "Works now (by some miracleeee) (no linker errors now rn frfrfrf)" << endl;
 
 
 	return 0;
+}
+
+std::vector<std::string> readWordsFromFile(const std::string& filename) {
+	std::vector<std::string> words;
+	std::ifstream file(filename);
+	std::string word;
+
+	if (file.is_open()) {
+		while (file >> word) {
+			words.push_back(word);
+		}
+		file.close();
+	}
+	else {
+		std::cerr << "Unable to open file " << filename << std::endl;
+	}
+
+	return words;
 }

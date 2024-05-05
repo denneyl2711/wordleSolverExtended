@@ -87,7 +87,7 @@ private:
 public:
 	Dawg(vector<string> wordList);
 
-	~Dawg() { eraseNode(root); if (lastAdded != nullptr){delete lastAdded; } }
+	~Dawg() { cout << endl << endl << "Destroying dawg " << endl; eraseNode(root); if (lastAdded != nullptr) { delete lastAdded; } }
 
 	Dawg(const Dawg& dawg);
 

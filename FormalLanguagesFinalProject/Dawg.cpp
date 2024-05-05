@@ -280,7 +280,7 @@ void Dawg::printWords() const
 
 void Dawg::eraseNode(DawgNode* node)
 {
-    //cout << *node << endl;
+    cout << *node << endl;
 
     for (Edge* edge : node->getChildEdges()) {
         DawgNode* childNode = edge->getDestination();
@@ -293,18 +293,20 @@ void Dawg::eraseNode(DawgNode* node)
         else {
             for (Edge* parentEdge : childNode->getParentsEdges()) {
                 if (parentEdge->getDestination() == node) {
+                    cout << "     removing " << edge->getLetter() << " edge" << endl;
                     childNode->removeParentEdge(parentEdge);
                     node->removeChildEdge(edge);
                 }
             }
         }
 
-        delete edge;
+        //delete edge;
         
     }
     for (Edge* parentEdge : node->getParentsEdges()) {
         node->removeParentEdge(parentEdge);
     }
+
     delete node;
 }
 

@@ -26,16 +26,16 @@ void DawgNode::addParent(DawgNode* node) {
 }
 
 
-void DawgNode::redirect(DawgNode* node)
-{
-    char letter = this->getChildEdges().at(0)->getLetter();
-
-    Edge* edgeReverse = new Edge(' ', node, this);
-    node->parents.push_back(edgeReverse);
-
-    Edge* edge = new Edge(letter, this, node);
-    this->children.push_back(edge);
-}
+//void DawgNode::redirect(DawgNode* node)
+//{
+//    char letter = this->getChildEdges().at(0)->getLetter();
+//
+//    Edge* edgeReverse = new Edge(' ', node, this);
+//    node->parents.push_back(edgeReverse);
+//
+//    Edge* edge = new Edge(letter, this, node);
+//    this->children.push_back(edge);
+//}
 
 DawgNode* DawgNode::addChild(char letter) {
     DawgNode* newNode = new DawgNode();
@@ -114,21 +114,24 @@ std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
 //begin Dawg
 
 Dawg::Dawg(vector<string> wordList) {
-    lastAdded = nullptr;
+    //lastAdded = nullptr;
     addWords(wordList);
 }
 
 Dawg::Dawg(const Dawg& dawg)
 {
-    lastAdded = nullptr;
+    //lastAdded = nullptr;
     this->addWords(dawg.getWords());
 }
 
 Dawg& Dawg::operator=(const Dawg& other)
 {
+   
     if (this != &other) {
         this->clear();
-        this->addWords(other.getWords());
+        if (other.getWords().size() != 0) {
+            this->addWords(other.getWords());
+        }
     }
 
     return *this;
@@ -145,17 +148,17 @@ void Dawg::addWord(string word) {
 
     //need to have temporary storage for lastAdded so we can only change lastAdded after calling reduce
     //without this temp storage, lastAdded = currentNode in reduce
-    DawgNode* tempLastAdded = lastAdded;
+    //DawgNode* tempLastAdded = lastAdded;
 
     for (int i = lengthPre; i < word.length(); i++) {
         currentNode = currentNode->addChild(word.at(i));
-        tempLastAdded = currentNode;
+        //tempLastAdded = currentNode;
     }
     currentNode->setTerminal(true);
     
-    reduce(currentNode);
+    //reduce(currentNode);
 
-    lastAdded = tempLastAdded;
+    //lastAdded = tempLastAdded;
 }
 
 
@@ -170,59 +173,59 @@ void Dawg::addWords(vector<string> words)
     }
 }
 
-void Dawg::reduce(DawgNode* current) {
-    // Not implemented yet
-    if (lastAdded == nullptr) {
-        return;
-    }
-
-    vector <string> lastAddedRight;
-    vector <string> currentRight;
-
-    this->getWordsRec(lastAdded, "", lastAddedRight);
-    this->getWordsRec(current, "", currentRight);
-
-    DawgNode* currentParent = current;
-
-    while (lastAddedRight == currentRight && lastAdded->getTerminal() == currentParent->getTerminal()) {
-        currentParent = currentParent->getParentNodes().at(0);
-
-        //redirect edge
-        currentParent->redirect(lastAdded);
-
-        for (Edge* edgeOfParent : currentParent->getChildEdges()) {
-            if (edgeOfParent->getDestination() == current) {
-                currentParent->removeChildEdge(edgeOfParent);
-                //delete edgeOfParent;
-            }
-        }
-        //delete old node
-        eraseNode(current);
-
-        if (lastAdded->getNumParents() == 0) {
-            return;
-        }
-
-        //set last Added and current 
-        lastAdded = lastAdded->getParentNodes().at(0); //assuming its the first parent
-        current = currentParent;
-
-        lastAddedRight.clear();
-        currentRight.clear();
-
-        this->getWordsRec(lastAdded, "", lastAddedRight);
-        this->getWordsRec(currentParent, "", currentRight);
-
-    }
-
-}
+//void Dawg::reduce(DawgNode* current) {
+//    // Not implemented yet
+//    if (lastAdded == nullptr) {
+//        return;
+//    }
+//
+//    vector <string> lastAddedRight;
+//    vector <string> currentRight;
+//
+//    this->getWordsRec(lastAdded, "", lastAddedRight);
+//    this->getWordsRec(current, "", currentRight);
+//
+//    DawgNode* currentParent = current;
+//
+//    while (lastAddedRight == currentRight && lastAdded->getTerminal() == currentParent->getTerminal()) {
+//        currentParent = currentParent->getParentNodes().at(0);
+//
+//        //redirect edge
+//        currentParent->redirect(lastAdded);
+//
+//        for (Edge* edgeOfParent : currentParent->getChildEdges()) {
+//            if (edgeOfParent->getDestination() == current) {
+//                currentParent->removeChildEdge(edgeOfParent);
+//                //delete edgeOfParent;
+//            }
+//        }
+//        //delete old node
+//        eraseNode(current);
+//
+//        if (lastAdded->getNumParents() == 0) {
+//            return;
+//        }
+//
+//        //set last Added and current 
+//        lastAdded = lastAdded->getParentNodes().at(0); //assuming its the first parent
+//        current = currentParent;
+//
+//        lastAddedRight.clear();
+//        currentRight.clear();
+//
+//        this->getWordsRec(lastAdded, "", lastAddedRight);
+//        this->getWordsRec(currentParent, "", currentRight);
+//
+//    }
+//
+//}
 
 
 DawgNode* Dawg::clear()
 {
     eraseNode(root);
     root = new DawgNode();
-    lastAdded = nullptr;
+    //lastAdded = nullptr;
     return root;
 }
 
@@ -280,7 +283,7 @@ void Dawg::printWords() const
 
 void Dawg::eraseNode(DawgNode* node)
 {
-    cout << *node << endl;
+    //cout << *node << endl;
 
     for (Edge* edge : node->getChildEdges()) {
         DawgNode* childNode = edge->getDestination();
@@ -293,7 +296,7 @@ void Dawg::eraseNode(DawgNode* node)
         else {
             for (Edge* parentEdge : childNode->getParentsEdges()) {
                 if (parentEdge->getDestination() == node) {
-                    cout << "     removing " << edge->getLetter() << " edge" << endl;
+                    //cout << "     removing " << edge->getLetter() << " edge" << endl;
                     childNode->removeParentEdge(parentEdge);
                     node->removeChildEdge(edge);
                 }

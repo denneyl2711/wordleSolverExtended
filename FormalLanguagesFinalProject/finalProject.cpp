@@ -14,8 +14,8 @@ int main() {
 	DawgNode* nodeE = nodeZ->addChild('e');*/
 	//----------------------------------------------------------------------------------
 	cout << "Runs at all" << endl;
-	//vector <string> words = { "cat", "fact", "facts", "facet", "facets", "great", "janky", "welds"};
-	vector<string> words = { "truce", "spruce", "reduce" };
+	vector <string> words = { "cat", "fact", "facts", "facet", "facets"};
+	//vector<string> words = { "truce", "spruce", "reduce" };
 	//vector<string> words = readWordsFromFile("wordleWords.txt");
 
 	/*for (string word : words) {
@@ -41,20 +41,20 @@ int main() {
 	DawgNode* beginFacts = root->getEdge('f')->getDestination();
 	cout << "Node after root (facts path) is: " << *beginFacts << endl;*/
 
-	dawg1.clear();
+	//dawg1.clear();
 	dawg1.printWords();
 
 	//Testing destructor
-	cout << "Testing destructor ---------------------> (open task manager)" << endl;
+	/*cout << "Testing destructor ---------------------> (open task manager)" << endl;
 	cout << "Creating and destroying many many dawgs (this will take several minutes to complete)" << endl;
-	for (int i = 0; i < 1000000; ++i) {
+	for (int i = 0; i < 100; ++i) {
 		Dawg dawg2(words);
 	}
-	cout << "Done creating and deleting items" << endl;
+	cout << "Done creating and deleting items" << endl;*/
 
 
 	{
-		cout << "Testing assignment operator" << endl;
+		cout << "Testing assignment operator." << endl;
 		Dawg newDawg = dawg1;
 		cout << "Printing words from newDawg" << endl;
 		newDawg.printWords();
@@ -66,7 +66,7 @@ int main() {
 
 
 
-	cout << "Works now (by some miracleeee) (no linker errors now rn frfrfrf)" << endl;
+	cout << "Works now (by some miracleeee) (no linker errors now rn frfrfr)" << endl;
 
 
 	return 0;

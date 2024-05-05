@@ -40,7 +40,7 @@ public:
 
 	bool getTerminal() { return terminal; }
 
-	void redirect(DawgNode* node);
+	//void redirect(DawgNode* node);
 
 	void setTerminal(bool terminal) { this->terminal = terminal; }
 
@@ -53,6 +53,8 @@ public:
 	int getNumChildren() { return children.size(); }
 
 	vector<Edge*> getChildEdges() const { return children; }
+
+	vector<Edge*> getChildEdges() { return children; }
 
 	set<DawgNode*> getChildrenNodes() const;
 
@@ -75,7 +77,7 @@ public:
 class Dawg {
 private:
 	DawgNode* root;
-	DawgNode* lastAdded;
+	//DawgNode* lastAdded;
 
 	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const;
 
@@ -87,7 +89,7 @@ private:
 public:
 	Dawg(vector<string> wordList);
 
-	~Dawg() { cout << endl << endl << "Destroying dawg " << endl; eraseNode(root); if (lastAdded != nullptr) { delete lastAdded; } }
+	~Dawg() { cout << endl << endl << "Destroying dawg " << endl; eraseNode(root); }
 
 	Dawg(const Dawg& dawg);
 

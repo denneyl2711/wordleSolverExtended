@@ -41,10 +41,6 @@ int main() {
 	cout << "Creating and destroying many many dawgs (this will take several minutes to complete)" << endl;
 	for (int i = 0; i < 1000000; ++i) {
 		Dawg dawg2(words);
-
-		for (string word : words) {
-			dawg2.addWord(word);
-		}
 	}
 	cout << "Done creating and deleting items" << endl;
 

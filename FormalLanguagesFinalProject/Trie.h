@@ -8,45 +8,45 @@
 
 using namespace std;
 
-class DawgNode;
+class TrieNode;
 
 class Edge {
 private:
 	char letter;
-	DawgNode* start;
-	DawgNode* destination;
+	TrieNode* start;
+	TrieNode* destination;
 public:
-	Edge(char letter, DawgNode* start, DawgNode* destination);
+	Edge(char letter, TrieNode* start, TrieNode* destination);
 
-	Edge(DawgNode* parent, DawgNode* child);
+	Edge(TrieNode* parent, TrieNode* child);
 	
-	void setDestination(DawgNode* node) { this->destination = node; }
+	void setDestination(TrieNode* node) { this->destination = node; }
 
-	void setStart(DawgNode* node) { this->start = node; }
+	void setStart(TrieNode* node) { this->start = node; }
 
 	char getLetter() { return letter; }
 
-	DawgNode* getDestination() { return destination; }
+	TrieNode* getDestination() { return destination; }
 };
 
-class DawgNode {
+class TrieNode {
 private:
 	vector<Edge*> parents;
 	vector<Edge*> children;
 	bool terminal;
 
 public:
-	DawgNode();
+	TrieNode();
 
 	bool getTerminal() { return terminal; }
 
-	//void redirect(DawgNode* node);
+	//void redirect(TrieNode* node);
 
 	void setTerminal(bool terminal) { this->terminal = terminal; }
 
-	void addParent(DawgNode* node);
+	void addParent(TrieNode* node);
 
-	DawgNode* addChild(char letter);
+	TrieNode* addChild(char letter);
 
 	int getNumParents() { return parents.size(); }
 
@@ -56,11 +56,11 @@ public:
 
 	vector<Edge*> getChildEdges() { return children; }
 
-	set<DawgNode*> getChildrenNodes() const;
+	set<TrieNode*> getChildrenNodes() const;
 
 	vector<Edge*> getParentsEdges() const { return parents; }
 
-	vector<DawgNode*> getParentNodes() const;
+	vector<TrieNode*> getParentNodes() const;
 
 	void removeChildEdge(Edge* edge);
 
@@ -71,20 +71,20 @@ public:
 	Edge* getEdge(char letter);
 
 
-	friend std::ostream& operator<<(std::ostream& os, const DawgNode& obj);
+	friend std::ostream& operator<<(std::ostream& os, const TrieNode& obj);
 };
 
 class Trie {
 private:
-	DawgNode* root;
-	//DawgNode* lastAdded;
+	TrieNode* root;
+	//TrieNode* lastAdded;
 
-	void getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const;
+	void getWordsRec(TrieNode* node, string prefix, vector<string>& wordList) const;
 
-	//void reduce(DawgNode* current);
+	//void reduce(TrieNode* current);
 
 	//delete the passed-in node and proceeding nodes
-	void eraseNode(DawgNode*);
+	void eraseNode(TrieNode*);
 
 public:
 	Trie(vector<string> wordList);
@@ -95,17 +95,17 @@ public:
 
 	Trie& operator= (const Trie& other);
 
-	DawgNode* getRoot() { return root; }
+	TrieNode* getRoot() { return root; }
 
 	void addWord(string word);
 
 	void addWords(vector<string> words);
 
-	DawgNode* clear(); //remove all nodes and return a pointer to the new root
+	TrieNode* clear(); //remove all nodes and return a pointer to the new root
 
 	string findPrefixString(string word);
 
-	DawgNode* findPrefixNode(string word);
+	TrieNode* findPrefixNode(string word);
 
 	vector<string> getWords() const;
 
@@ -115,19 +115,19 @@ public:
 
 	void pruneGreen(char letter, int idx);
 
-	void pruneGreenRec(char letter,int currentIdx, int targetIdx, DawgNode* node);
+	void pruneGreenRec(char letter,int currentIdx, int targetIdx, TrieNode* node);
 
 	void pruneYellow(char letter, int idx);
 
-	void pruneYellowRec(char letter, int currentIdx, int targetIdx, DawgNode* node);
+	void pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 
 	void pruneByIdx(char letter, int idx);
 
-	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, DawgNode* node);
+	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 
 	void pruneGrey(char letter);
 
-	void pruneGreyRec(char letter, DawgNode* node);
+	void pruneGreyRec(char letter, TrieNode* node);
 
 
 };

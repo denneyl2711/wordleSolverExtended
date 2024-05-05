@@ -1,32 +1,32 @@
 #include "Dawg.h"
 #include <algorithm>
 
-Edge::Edge(char letter, DawgNode* start, DawgNode* destination) {
+Edge::Edge(char letter, TrieNode* start, TrieNode* destination) {
     this->letter = letter;
     this->start = start;
     this->destination = destination;
 }
 
-Edge::Edge(DawgNode* parent, DawgNode* child) {
+Edge::Edge(TrieNode* parent, TrieNode* child) {
     this->letter = ' ';
     this->start = parent;
     this->destination = child;
 }
 //end Edge
 //---------------------------------------------------------------------------------------------------
-//begin DawgNode
+//begin TrieNode
 
-DawgNode::DawgNode() {
+TrieNode::TrieNode() {
     terminal = false;
 }
 
-void DawgNode::addParent(DawgNode* node) {
+void TrieNode::addParent(TrieNode* node) {
     Edge* edge = new Edge(' ', this, node);
     parents.push_back(edge);
 }
 
 
-//void DawgNode::redirect(DawgNode* node)
+//void TrieNode::redirect(TrieNode* node)
 //{
 //    char letter = this->getChildEdges().at(0)->getLetter();
 //
@@ -37,16 +37,16 @@ void DawgNode::addParent(DawgNode* node) {
 //    this->children.push_back(edge);
 //}
 
-DawgNode* DawgNode::addChild(char letter) {
-    DawgNode* newNode = new DawgNode();
+TrieNode* TrieNode::addChild(char letter) {
+    TrieNode* newNode = new TrieNode();
     Edge* edge = new Edge(letter, this, newNode);
     children.push_back(edge);
     newNode->addParent(this);
     return newNode;
 }
 
-set<DawgNode*> DawgNode::getChildrenNodes() const {
-    set <DawgNode*> nodes;
+set<TrieNode*> TrieNode::getChildrenNodes() const {
+    set <TrieNode*> nodes;
 
     for (Edge* child : children) {
         nodes.insert(child->getDestination());
@@ -55,31 +55,31 @@ set<DawgNode*> DawgNode::getChildrenNodes() const {
     return nodes;
 }
 
-vector<DawgNode*> DawgNode::getParentNodes() const {
-    set <DawgNode*> nodes;
+vector<TrieNode*> TrieNode::getParentNodes() const {
+    set <TrieNode*> nodes;
 
     for (Edge* parent : parents) {
         nodes.insert(parent->getDestination());
     }
 
-    vector <DawgNode*> vectorNodes(nodes.begin(), nodes.end());
+    vector <TrieNode*> vectorNodes(nodes.begin(), nodes.end());
 
     return vectorNodes;
 }
 
-void DawgNode::removeChildEdge(Edge* edge)
+void TrieNode::removeChildEdge(Edge* edge)
 {
     auto position = std::find(children.begin(), children.end(), edge);
     children.erase(position);
 }
 
-void DawgNode::removeParentEdge(Edge* edge)
+void TrieNode::removeParentEdge(Edge* edge)
 {
     auto position = std::find(parents.begin(), parents.end(), edge);
     parents.erase(position);
 }
 
-bool DawgNode::hasEdge(char letter) {
+bool TrieNode::hasEdge(char letter) {
     for (Edge* child : children) {
         if (child->getLetter() == letter) {
             return true;
@@ -89,7 +89,7 @@ bool DawgNode::hasEdge(char letter) {
     return false;
 }
 
-Edge* DawgNode::getEdge(char letter) {
+Edge* TrieNode::getEdge(char letter) {
     for (Edge* child : children) {
         if (child->getLetter() == letter) {
             return child;
@@ -99,8 +99,8 @@ Edge* DawgNode::getEdge(char letter) {
     return nullptr;
 }
 
-std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
-    os << "DawgNode value: ";
+std::ostream& operator<<(std::ostream& os, const TrieNode& obj) {
+    os << "TrieNode value: ";
     auto children = obj.getChildEdges();
     for (int i = 0; i < children.size(); i++) {
         os << children.at(i)->getLetter();
@@ -109,7 +109,7 @@ std::ostream& operator<<(std::ostream& os, const DawgNode& obj) {
     return os;
 }
 
-//end DawgNode
+//end TrieNode
 //---------------------------------------------------------------------------------------------------
 //begin Trie
 
@@ -140,15 +140,15 @@ Trie& Trie::operator=(const Trie& other)
 //words are passed in, in reverse alphabetical order for this method
 void Trie::addWord(string word) {
     if (root == nullptr) {
-        root = new DawgNode();
+        root = new TrieNode();
     }
 
-    DawgNode* currentNode = findPrefixNode(word);
+    TrieNode* currentNode = findPrefixNode(word);
     int lengthPre = findPrefixString(word).length();
 
     //need to have temporary storage for lastAdded so we can only change lastAdded after calling reduce
     //without this temp storage, lastAdded = currentNode in reduce
-    //DawgNode* tempLastAdded = lastAdded;
+    //TrieNode* tempLastAdded = lastAdded;
 
     for (int i = lengthPre; i < word.length(); i++) {
         currentNode = currentNode->addChild(word.at(i));
@@ -173,7 +173,7 @@ void Trie::addWords(vector<string> words)
     }
 }
 
-//void Trie::reduce(DawgNode* current) {
+//void Trie::reduce(TrieNode* current) {
 //    // Not implemented yet
 //    if (lastAdded == nullptr) {
 //        return;
@@ -185,7 +185,7 @@ void Trie::addWords(vector<string> words)
 //    this->getWordsRec(lastAdded, "", lastAddedRight);
 //    this->getWordsRec(current, "", currentRight);
 //
-//    DawgNode* currentParent = current;
+//    TrieNode* currentParent = current;
 //
 //    while (lastAddedRight == currentRight && lastAdded->getTerminal() == currentParent->getTerminal()) {
 //        currentParent = currentParent->getParentNodes().at(0);
@@ -221,16 +221,16 @@ void Trie::addWords(vector<string> words)
 //}
 
 
-DawgNode* Trie::clear()
+TrieNode* Trie::clear()
 {
     eraseNode(root);
-    root = new DawgNode();
+    root = new TrieNode();
     //lastAdded = nullptr;
     return root;
 }
 
 string Trie::findPrefixString(string word) {
-    DawgNode* currentNode = root;
+    TrieNode* currentNode = root;
     string pre = "";
     for (int i = 0; i < word.length(); i++) {
         Edge* edge = currentNode->getEdge(word.at(i));
@@ -245,8 +245,8 @@ string Trie::findPrefixString(string word) {
     return pre;
 }
 
-DawgNode* Trie::findPrefixNode(string word) {
-    DawgNode* currentNode = root;
+TrieNode* Trie::findPrefixNode(string word) {
+    TrieNode* currentNode = root;
     for (int i = 0; i < word.length(); i++) {
         Edge* edge = currentNode->getEdge(word.at(i));
         if (edge == nullptr) {
@@ -312,7 +312,7 @@ void Trie::pruneGreen(char letter, int idx)
     pruneGreenRec(letter,0, idx, root);
 }
 
-void Trie::pruneGreenRec(char letter,int currentIdx, int targetIdx, DawgNode* node)
+void Trie::pruneGreenRec(char letter,int currentIdx, int targetIdx, TrieNode* node)
 {
     if (currentIdx > targetIdx) {
         return;
@@ -336,7 +336,7 @@ void Trie::pruneYellow(char letter, int idx)
     pruneYellowRec(letter, 0, idx, root);
 }
 
-void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, DawgNode* node)
+void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node)
 {
     //removing words with yellow letter in wrong spot
     if (currentIdx == targetIdx) {
@@ -364,7 +364,7 @@ void Trie::pruneGrey(char letter)
     pruneGreyRec(letter, root);
 }
 
-void Trie::pruneGreyRec(char letter, DawgNode* node)
+void Trie::pruneGreyRec(char letter, TrieNode* node)
 {
     for (Edge* childEdge : node->getChildEdges()) {
         if (childEdge->getLetter() == letter) {
@@ -384,17 +384,17 @@ void Trie::pruneByIdx(char letter, int idx)
     
 }
 
-void Trie::pruneByIdxRec(char letter, int currentIdx, int targetIdx, DawgNode* node)
+void Trie::pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node)
 {
 }
 
 
-void Trie::eraseNode(DawgNode* node)
+void Trie::eraseNode(TrieNode* node)
 {
     //cout << *node << endl;
 
     for (Edge* edge : node->getChildEdges()) {
-        DawgNode* childNode = edge->getDestination();
+        TrieNode* childNode = edge->getDestination();
 
         //do not delete the child node if it has multiple parents
         //this lets the function delete single branches/words instead of entire suffixes
@@ -421,7 +421,7 @@ void Trie::eraseNode(DawgNode* node)
     delete node;
 }
 
-void Trie::getWordsRec(DawgNode* node, string prefix, vector<string>& wordList) const {
+void Trie::getWordsRec(TrieNode* node, string prefix, vector<string>& wordList) const {
     if (node == nullptr) {
         return;
     }

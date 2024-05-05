@@ -6,12 +6,12 @@ std::vector<std::string> readWordsFromFile(const std::string& filename);
 int main() {
 	//testing functionality of trie
 	////testing addChild
-	///*DawgNode* nodeStart = new DawgNode;
-	//DawgNode* nodeC = nodeStart->addChild('c');
-	//DawgNode* nodeR = nodeC->addChild('r');
-	//DawgNode* nodeA = nodeR->addChild('a');
-	//DawgNode* nodeZ = nodeA->addChild('z');
-	//DawgNode* nodeE = nodeZ->addChild('e');*/
+	///*TrieNode* nodeStart = new TrieNode;
+	//TrieNode* nodeC = nodeStart->addChild('c');
+	//TrieNode* nodeR = nodeC->addChild('r');
+	//TrieNode* nodeA = nodeR->addChild('a');
+	//TrieNode* nodeZ = nodeA->addChild('z');
+	//TrieNode* nodeE = nodeZ->addChild('e');*/
 	////----------------------------------------------------------------------------------
 	//cout << "Runs at all" << endl;
 	//vector <string> words = { "cat", "fact", "facts", "facet", "facets"};
@@ -30,15 +30,15 @@ int main() {
 	//cout << "Prefix is " << pre << endl;*/
 
 	////testing printWords()
-	//DawgNode* root = dawg1.getRoot();
+	//TrieNode* root = dawg1.getRoot();
 	//dawg1.printWords();
 
 	//cout << "Root --->" <<  *root << endl;
 
-	///*DawgNode* beginCat = root->getEdge('c')->getDestination();
+	///*TrieNode* beginCat = root->getEdge('c')->getDestination();
 	//cout << "Node after root (cat path) is: " << *beginCat << endl;
 	//
-	//DawgNode* beginFacts = root->getEdge('f')->getDestination();
+	//TrieNode* beginFacts = root->getEdge('f')->getDestination();
 	//cout << "Node after root (facts path) is: " << *beginFacts << endl;*/
 
 	////dawg1.clear();

@@ -287,6 +287,39 @@ void Trie::prune(string guessInfo, string guess)
 
     //store guessInfo for double letters and create seperate methods for each case
     //finish yellows functionality
+
+
+    //CASES FOR DOUBLE LETTERS:
+    // 
+    // One green i, one grey i
+    // vivid
+    // ---------> means that there is an i at index 1
+    // 
+    // 
+    // One green i, one yellow i
+    // vivid
+    // ---------> means that there's two i's
+    //                  1 i @ index 1
+    //                  1 i !@ index 3
+    // 
+    // 
+    // One yellow i, one grey i
+    // vivid
+    // ---------> means that there is only 1 i, and it is in neither index 1 nor index 3
+    // 
+    // Two yellow i's 
+    // vivid
+    // ---------> means that there are two i's, and neither of them are in index 1 or 3
+    //                                         (i must be in index 0, 2, or 4)
+    // 
+    // Two grey i's
+    // vivid
+    // --------> easy! There is no i in the word
+    // 
+    // 
+    // 
+    // 
+    //
     for (int i = 0; i < guessInfo.length(); i++) {
 
         //if element is not found, mapElementIr == duplicates.end()

@@ -60,6 +60,10 @@ public:
 
 	vector<DawgNode*> getParentNodes() const;
 
+	void removeChildEdge(Edge* edge);
+
+	void removeParentEdge(Edge* edge);
+
 	bool hasEdge(char letter);
 
 	Edge* getEdge(char letter);

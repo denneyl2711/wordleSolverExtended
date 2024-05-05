@@ -1,4 +1,4 @@
-#include "Dawg.h"
+#include "Trie.h"
 #include <algorithm>
 
 Edge::Edge(char letter, TrieNode* start, TrieNode* destination) {

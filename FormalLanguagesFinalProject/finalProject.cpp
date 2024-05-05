@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "Dawg.h"
+#include "Trie.h"
 using namespace std;
 std::vector<std::string> readWordsFromFile(const std::string& filename);
 int main() {
@@ -74,17 +74,19 @@ int main() {
 	Trie wordleDawg(words);
 	cout << "Words available: "<< wordleDawg.getWords().size() << endl;
 
-	cout << "Enter first guess: " << endl;
 	string userGuess;
-	cin >> userGuess;
-
-	cout << "Enter guess information in form green=Y, yellow=M, grey=N" << endl;
 	string guessInfo;
-	cin >> guessInfo;
+	for (int i = 0; i < 6; ++i) {
+		cout << "Enter guess #" << i + 1 << ": ";
+		cin >> userGuess;
 
-	wordleDawg.prune(guessInfo, userGuess);
-	wordleDawg.printWords();
-	cout<< "Words available: " << wordleDawg.getWords().size()<<endl;
+		cout << "Enter guess information in form green=Y, yellow=M, grey=N" << endl;
+		cin >> guessInfo;
+
+		wordleDawg.prune(guessInfo, userGuess);
+		wordleDawg.printWords();
+		cout << "Words available: " << wordleDawg.getWords().size() << endl;
+	}
 	
 
 

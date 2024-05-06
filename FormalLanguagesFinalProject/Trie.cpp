@@ -281,8 +281,14 @@ void Trie::printWords() const
     }
 }
 
+//precondition: guessInfo and guess are the same length
 void Trie::prune(string guessInfo, string guess)
 {
+    for (int i = 0; i < guessInfo.length(); ++i) {
+        guess[i] = tolower(guess[i]);
+        guessInfo[i] = toupper(guessInfo[i]);
+    }
+
     unordered_map<char, vector<int>> duplicates = findDuplicates(guess);
 
     //store guessInfo for double letters and create seperate methods for each case

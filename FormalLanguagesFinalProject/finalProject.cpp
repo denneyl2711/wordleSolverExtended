@@ -77,7 +77,9 @@ int main() {
 
 	string userGuess;
 	string guessInfo;
+	
 	for (int i = 0; i < 6; ++i) {
+		cout << endl;
 
 		cout << "Enter guess #" << i + 1 << ": ";
 		cin >> userGuess;
@@ -87,11 +89,25 @@ int main() {
 
 		//check for bad user input
 		//can add more conditions later
+		bool badGuess = false;
+
 		if (userGuess.length() != guessInfo.length()) {
-			cout << "Error reading input, please try again" << endl;
-			i--;
-			continue;
+			cout << "Word length doesn't match guess info length. Please try again." << endl;
+			badGuess = true;
 		}
+
+		for (char letter : guessInfo) {
+			if (toupper(letter) != 'Y' &&
+				toupper(letter) != 'M' &&
+				toupper(letter) != 'N') {
+				cout << "Guess info is invalid. Please try again. " << endl;
+				badGuess = true;
+				break;
+			}
+
+		}
+
+		if (badGuess) { i--;  continue; }
 
 		wordleDawg.prune(guessInfo, userGuess);
 		wordleDawg.printWords();

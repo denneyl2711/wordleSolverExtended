@@ -328,21 +328,33 @@ void Trie::prune(string guessInfo, string guess)
         auto mapElementItr = duplicates.find(guess[i]);
         bool hasDuplicates = mapElementItr != duplicates.end();
 
-        /*if (hasDuplicates) {
-            cout << "There are duplicates of " << guess[i] << endl;
-        }
-        else {
-            cout << "   There are no duplicates of " << guess[i] << endl;
-        }*/
-        if (guessInfo[i] == 'Y') {
-            pruneGreen(guess[i], i);
-        }
-        else if (guessInfo[i] == 'M') {
-            pruneYellow(guess[i], i);
+        if (hasDuplicates) {
+            vector<int> duplicateIndices = mapElementItr->second;
+            //... finish this later
+
+            //if all duplicate letters are grey, proceed as normal (call pruneGrey on the letter)
+            bool allLettersGrey = true;
+            for (int idx : duplicateIndices) {
+                if (guessInfo[idx] != 'N') {
+                    allLettersGrey = false;
+                }
+            }
+
+            if (allLettersGrey) {
+                pruneGrey(guess[i]);
+            }
         }
 
-        else if (guessInfo[i] == 'N') {
-            if (!hasDuplicates) {
+        //simple pruning if no duplicates
+        else {
+            if (guessInfo[i] == 'Y') {
+                pruneGreen(guess[i], i);
+            }
+            else if (guessInfo[i] == 'M') {
+                pruneYellow(guess[i], i);
+            }
+
+            else if (guessInfo[i] == 'N') {
                 pruneGrey(guess[i]);
             }
         }
@@ -425,6 +437,7 @@ void Trie::pruneYellow(char letter, int idx)
     pruneYellowRec(letter, 0, idx, root);
 }
 
+//assuming that this function is oblivious of 
 void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node)
 {
     //removing words with yellow letter in wrong spot
@@ -439,13 +452,43 @@ void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* 
 
     //removing words without yellow letter
     else {
+        for (Edge* childEdge : node->getChildEdges()) {
+            TrieNode* childNode = childEdge->getDestination();
+            
+            //search to see if the target letter is in the childNode's right branches
+            vector<string> rightBranchLangs;
+
+            getWordsRec(childNode, "", rightBranchLangs);
+
+            bool containsLetter = false;
+
+            bool parentContainsLetter = childEdge->getLetter() == letter;
+           
+            for (string word : rightBranchLangs) {
+                for (char wordLetter : word) {
+                    if (wordLetter == letter) {
+                        containsLetter = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (parentContainsLetter) {
+                return;
+            }
+
+            if (containsLetter) {
+                //recurse down until you find a node you can cut
+                pruneYellowRec(letter, currentIdx + 1, targetIdx, childNode);
+            }
+            else {
+                //remove the node which has no children which contains target letter
+                eraseNode(childNode);
+                node->removeChildEdge(childEdge);
+            }
+        }
 
     }
-
-    for (Edge* childEdge : node->getChildEdges()) {
-        pruneYellowRec(letter, currentIdx + 1, targetIdx, childEdge->getDestination());
-    }
-    
 }
 
 void Trie::pruneGrey(char letter)

@@ -71,6 +71,7 @@ int main() {
 
 	//Wordle 
 	vector<string> words = readWordsFromFile("wordleWords.txt");
+	//vector<string> words = { "facet", "smile", "bored", "bores" };
 	Trie wordleDawg(words);
 	cout << "Words available: "<< wordleDawg.getWords().size() << endl;
 

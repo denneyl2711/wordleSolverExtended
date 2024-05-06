@@ -300,6 +300,7 @@ void Trie::prune(string guessInfo, string guess)
     // One green i, one grey i
     // vivid
     // ---------> means that there is an i at index 1
+    //            
     // 
     // 
     // One green i, one yellow i
@@ -338,15 +339,24 @@ void Trie::prune(string guessInfo, string guess)
             vector<int> duplicateIndices = mapElementItr->second;
             //... finish this later
 
+            int greenDuplicateCount = 0;  //Y
+            int yellowDuplicateCount = 0; //M
+            int greyDuplicateCount = 0;   //N
+
             //if all duplicate letters are grey, proceed as normal (call pruneGrey on the letter)
             bool allLettersGrey = true;
             for (int idx : duplicateIndices) {
-                if (guessInfo[idx] != 'N') {
+                /*if (guessInfo[idx] != 'N') {
                     allLettersGrey = false;
-                }
+                }*/
+
+                if (guessInfo[idx] == 'Y') { greenDuplicateCount++; }
+                else if (guessInfo[idx] == 'M') { yellowDuplicateCount++; }
+                else if (guessInfo[idx] == 'N') { greyDuplicateCount++; }
             }
 
-            if (allLettersGrey) {
+            //if only duplicate greys
+            if (yellowDuplicateCount == 0 && greenDuplicateCount == 0) {
                 pruneGrey(guess[i]);
             }
         }

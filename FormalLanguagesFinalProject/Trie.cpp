@@ -25,6 +25,12 @@ void TrieNode::addParent(TrieNode* node) {
     parents.push_back(edge);
 }
 
+bool TrieNode::parentBranchContainsLetter(char letter)
+{
+
+    return false;
+}
+
 
 //void TrieNode::redirect(TrieNode* node)
 //{
@@ -166,7 +172,7 @@ void Trie::addWords(vector<string> words)
 {
     //sort words in reverse order before adding them
     //this ensures greater efficiency when adding nodes
-    std::sort(words.begin(), words.end(), std::greater<>());
+    std::sort(words.begin(), words.end(), std::less<>());
 
     for (string word : words) {
         addWord(word);
@@ -299,7 +305,7 @@ void Trie::prune(string guessInfo, string guess)
     // 
     // One green i, one grey i
     // vivid
-    // ---------> means that there is an i at index 1
+    // ---------> means that there is an i at index 1 and no other i in the word
     //            
     // 
     // 
@@ -313,6 +319,8 @@ void Trie::prune(string guessInfo, string guess)
     // One yellow i, one grey i
     // vivid
     // ---------> means that there is only 1 i, and it is in neither index 1 nor index 3
+    // if triple letter with greys and yellows only we know number of yellows = number of char in word
+    // and yellow and grey indices cannot have that char
     // 
     // Two yellow i's 
     // vivid
@@ -321,11 +329,12 @@ void Trie::prune(string guessInfo, string guess)
     // 
     // Two grey i's
     // vivid
-    // --------> easy! There is no i in the word
+    // --------> easy! There is no i in the word (done)
     // 
     // 
-    // 
-    // 
+    // Two green i's
+    // vivid
+    // --------> easy! Just run green on both i's (done)
     //
     for (int i = 0; i < guessInfo.length(); i++) {
 
@@ -358,6 +367,16 @@ void Trie::prune(string guessInfo, string guess)
             //if only duplicate greys
             if (yellowDuplicateCount == 0 && greenDuplicateCount == 0) {
                 pruneGrey(guess[i]);
+            }
+
+            //if only duplicate greens
+            else if (yellowDuplicateCount == 0 && greyDuplicateCount == 0) {
+                pruneGreen(guess[i],i);
+            }
+
+            //duplicate yellows and greys
+            else if (yellowDuplicateCount > 0 && greyDuplicateCount > 0 && greenDuplicateCount==0) {
+                
             }
         }
 
@@ -453,58 +472,63 @@ void Trie::pruneYellow(char letter, int idx)
     pruneYellowRec(letter, 0, idx, root);
 }
 
+
 //assuming that this function is oblivious of 
 void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node)
 {
     //removing words with yellow letter in wrong spot
-    if (currentIdx == targetIdx) {
+   /* if (currentIdx == targetIdx) {
         for (Edge* childEdge : node->getChildEdges()) {
             if (childEdge->getLetter() == letter) {
                 eraseNode(childEdge->getDestination());
                 node->removeChildEdge(childEdge);
             }
         }
+    }*/
+    if (currentIdx == targetIdx) {
+        pruneByIdxRec(letter, currentIdx, targetIdx, node);
     }
 
     //removing words without yellow letter
-    else {
-        for (Edge* childEdge : node->getChildEdges()) {
-            TrieNode* childNode = childEdge->getDestination();
+    for (Edge* childEdge : node->getChildEdges()) {
+        TrieNode* childNode = childEdge->getDestination();
             
-            //search to see if the target letter is in the childNode's right branches
-            vector<string> rightBranchLangs;
+        //search to see if the target letter is in the childNode's right branches
+        vector<string> rightBranchLangs;
 
-            getWordsRec(childNode, "", rightBranchLangs);
+        getWordsRec(childNode, "", rightBranchLangs);
 
-            bool containsLetter = false;
+        bool containsLetter = false;
 
-            bool parentContainsLetter = childEdge->getLetter() == letter;
+        bool parentContainsLetter = childEdge->getLetter() == letter;
+
+        //do not recurse if that branch has letter
+        if (parentContainsLetter) {
+            continue;
+        }
            
-            for (string word : rightBranchLangs) {
-                for (char wordLetter : word) {
-                    if (wordLetter == letter) {
-                        containsLetter = true;
-                        break;
-                    }
+        for (string word : rightBranchLangs) {
+            for (char wordLetter : word) {
+                if (wordLetter == letter) {
+                    containsLetter = true;
+                    break;
                 }
             }
-            
-            if (parentContainsLetter) {
-                return;
-            }
-
-            if (containsLetter) {
-                //recurse down until you find a node you can cut
-                pruneYellowRec(letter, currentIdx + 1, targetIdx, childNode);
-            }
-            else {
-                //remove the node which has no children which contains target letter
-                eraseNode(childNode);
-                node->removeChildEdge(childEdge);
-            }
         }
+           
 
-    }
+        if (containsLetter) {
+            //recurse down until you find a node you can cut
+            pruneYellowRec(letter, currentIdx + 1, targetIdx, childNode);
+        }
+            //remove the node which has no children which contains target letter
+        else {
+            eraseNode(childNode);
+            node->removeChildEdge(childEdge); 
+        }
+        
+
+}
 }
 
 void Trie::pruneGrey(char letter)
@@ -529,11 +553,26 @@ void Trie::pruneGreyRec(char letter, TrieNode* node)
 
 void Trie::pruneByIdx(char letter, int idx)
 {
-    
+    pruneByIdxRec(letter, 0, idx, root);
 }
 
 void Trie::pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node)
 {
+    if (currentIdx == targetIdx) {
+        for (Edge* childEdge : node->getChildEdges()) {
+            if (childEdge->getLetter() == letter) {
+                eraseNode(childEdge->getDestination());
+                node->removeChildEdge(childEdge);
+            }
+        }
+    }
+    
+    else if (currentIdx < targetIdx) {
+        for (TrieNode* childNode : node->getChildrenNodes()) {
+            pruneByIdxRec(letter, currentIdx + 1, targetIdx, childNode);
+        }
+        
+    }
 }
 
 

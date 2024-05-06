@@ -113,7 +113,7 @@ int main() {
 		wordleDawg.printWords();
 		cout << "Words available: " << wordleDawg.getWords().size() << endl;
 	}
-	
+	cout << "main changed so you just go aha" << endl;
 
 
 	return 0;

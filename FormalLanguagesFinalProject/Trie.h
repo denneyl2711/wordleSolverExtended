@@ -47,6 +47,8 @@ public:
 
 	void addParent(TrieNode* node);
 
+	bool parentBranchContainsLetter(char letter);
+
 	TrieNode* addChild(char letter);
 
 	int getNumParents() { return parents.size(); }

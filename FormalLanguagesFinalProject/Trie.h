@@ -41,8 +41,6 @@ public:
 
 	bool getTerminal() { return terminal; }
 
-	//void redirect(TrieNode* node);
-
 	void setTerminal(bool terminal) { this->terminal = terminal; }
 
 	void addParent(TrieNode* node);
@@ -82,11 +80,8 @@ public:
 class Trie {
 private:
 	TrieNode* root;
-	//TrieNode* lastAdded;
 
 	void getWordsRec(TrieNode* node, string prefix, vector<string>& wordList) const;
-
-	//void reduce(TrieNode* current);
 
 	//delete the passed-in node and proceeding nodes
 	void eraseNode(TrieNode*);
@@ -96,6 +91,9 @@ private:
 	void pruneGreenRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 	void pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 	void pruneGreyRec(char letter, TrieNode* node);
+	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
+	void getLeavesRec(TrieNode* node, vector <TrieNode*>& leaves); 
+	void pruneByTooManyLettersRec(char letter, int target, TrieNode* node, int lettersCounted);
 
 public:
 	Trie(vector<string> wordList);
@@ -130,21 +128,15 @@ public:
 
 	void pruneByIdx(char letter, int idx);
 
-	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
-
 	void pruneByNumLetter(char letter, int target);
 
 	void pruneGrey(char letter);
 
 	void pruneByTooManyLetters(char letter, int target);
-	 
-	void pruneByTooManyLettersRec(char letter, int target, TrieNode* node, int lettersCounted);
 
 	void pruneByTooFewLetters(char letter, int target);
 
 	vector <TrieNode*> getLeaves();
-
-	void getLeavesRec(TrieNode* node, vector <TrieNode*>& leaves);
 
 
 };

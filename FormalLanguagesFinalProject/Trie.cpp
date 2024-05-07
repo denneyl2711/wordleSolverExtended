@@ -59,17 +59,6 @@ void TrieNode::getParentContents(string& str)
 }
 
 
-//void TrieNode::redirect(TrieNode* node)
-//{
-//    char letter = this->getChildEdges().at(0)->getLetter();
-//
-//    Edge* edgeReverse = new Edge(' ', node, this);
-//    node->parents.push_back(edgeReverse);
-//
-//    Edge* edge = new Edge(letter, this, node);
-//    this->children.push_back(edge);
-//}
-
 TrieNode* TrieNode::addChild(char letter) {
     TrieNode* newNode = new TrieNode();
     Edge* edge = new Edge(letter, this, newNode);
@@ -147,13 +136,11 @@ std::ostream& operator<<(std::ostream& os, const TrieNode& obj) {
 //begin Trie
 
 Trie::Trie(vector<string> wordList) {
-    //lastAdded = nullptr;
     addWords(wordList);
 }
 
 Trie::Trie(const Trie& dawg)
 {
-    //lastAdded = nullptr;
     this->addWords(dawg.getWords());
 }
 
@@ -179,26 +166,17 @@ void Trie::addWord(string word) {
     TrieNode* currentNode = findPrefixNode(word);
     int lengthPre = findPrefixString(word).length();
 
-    //need to have temporary storage for lastAdded so we can only change lastAdded after calling reduce
-    //without this temp storage, lastAdded = currentNode in reduce
-    //TrieNode* tempLastAdded = lastAdded;
 
     for (int i = lengthPre; i < word.length(); i++) {
         currentNode = currentNode->addChild(word.at(i));
-        //tempLastAdded = currentNode;
     }
     currentNode->setTerminal(true);
     
-    //reduce(currentNode);
-
-    //lastAdded = tempLastAdded;
 }
 
 
 void Trie::addWords(vector<string> words)
 {
-    //sort words in reverse order before adding them
-    //this ensures greater efficiency when adding nodes
     std::sort(words.begin(), words.end(), std::less<>());
 
     for (string word : words) {
@@ -206,59 +184,11 @@ void Trie::addWords(vector<string> words)
     }
 }
 
-//void Trie::reduce(TrieNode* current) {
-//    // Not implemented yet
-//    if (lastAdded == nullptr) {
-//        return;
-//    }
-//
-//    vector <string> lastAddedRight;
-//    vector <string> currentRight;
-//
-//    this->getWordsRec(lastAdded, "", lastAddedRight);
-//    this->getWordsRec(current, "", currentRight);
-//
-//    TrieNode* currentParent = current;
-//
-//    while (lastAddedRight == currentRight && lastAdded->getTerminal() == currentParent->getTerminal()) {
-//        currentParent = currentParent->getParentNodes().at(0);
-//
-//        //redirect edge
-//        currentParent->redirect(lastAdded);
-//
-//        for (Edge* edgeOfParent : currentParent->getChildEdges()) {
-//            if (edgeOfParent->getDestination() == current) {
-//                currentParent->removeChildEdge(edgeOfParent);
-//                //delete edgeOfParent;
-//            }
-//        }
-//        //delete old node
-//        eraseNode(current);
-//
-//        if (lastAdded->getNumParents() == 0) {
-//            return;
-//        }
-//
-//        //set last Added and current 
-//        lastAdded = lastAdded->getParentNodes().at(0); //assuming its the first parent
-//        current = currentParent;
-//
-//        lastAddedRight.clear();
-//        currentRight.clear();
-//
-//        this->getWordsRec(lastAdded, "", lastAddedRight);
-//        this->getWordsRec(currentParent, "", currentRight);
-//
-//    }
-//
-//}
-
 
 TrieNode* Trie::clear()
 {
     eraseNode(root);
     root = new TrieNode();
-    //lastAdded = nullptr;
     return root;
 }
 
@@ -324,42 +254,40 @@ void Trie::prune(string guessInfo, string guess)
 
     unordered_map<char, vector<int>> duplicates = findDuplicates(guess);
 
-    //store guessInfo for double letters and create seperate methods for each case
-    //finish yellows functionality
+    //store guessInfo for duplicate letters and create seperate methods for each case
 
-
-    //CASES FOR DOUBLE LETTERS:
+    //CASES FOR DUPLICATE LETTERS:
     // 
-    // One green i, one grey i
+    // green i, grey i
     // vivid
     // ---------> means that there is an i at index 1 and no other i in the word
     //            
     // 
     // 
-    // One green i, one yellow i
+    // green i, yellow i
     // vivid
     // ---------> means that there's two i's
     //                  1 i @ index 1
     //                  1 i !@ index 3
     // 
     // 
-    // One yellow i, one grey i
+    // yellow i, grey i
     // vivid
     // ---------> means that there is only 1 i, and it is in neither index 1 nor index 3
     // if triple letter with greys and yellows only we know number of yellows = number of char in word
     // and yellow and grey indices cannot have that char
     // 
-    // Two yellow i's 
+    // Mult yellow i's 
     // vivid
     // ---------> means that there are two i's, and neither of them are in index 1 or 3
     //                                         (i must be in index 0, 2, or 4)
     // 
-    // Two grey i's
+    // Mult grey i's
     // vivid
     // --------> easy! There is no i in the word (done)
     // 
     // 
-    // Two green i's
+    // Mult green i's
     // vivid
     // --------> easy! Just run green on both i's (done)
     //
@@ -373,7 +301,6 @@ void Trie::prune(string guessInfo, string guess)
 
         if (hasDuplicates) {
             vector<int> duplicateIndices = mapElementItr->second;
-            //... finish this later
 
             int greenDuplicateCount = 0;  //Y
             int yellowDuplicateCount = 0; //M
@@ -382,9 +309,6 @@ void Trie::prune(string guessInfo, string guess)
             //if all duplicate letters are grey, proceed as normal (call pruneGrey on the letter)
             bool allLettersGrey = true;
             for (int idx : duplicateIndices) {
-                /*if (guessInfo[idx] != 'N') {
-                    allLettersGrey = false;
-                }*/
 
                 if (guessInfo[idx] == 'Y') { greenDuplicateCount++; }
                 else if (guessInfo[idx] == 'M') { yellowDuplicateCount++; }
@@ -488,7 +412,6 @@ unordered_map<char, vector<int>> Trie::findDuplicates(const string& str) {
         }
     }
 
-    //mildly sloppy but it works
     //removes elements which only have 1 "duplicate"
     //ex. without this function, findDuplicates("hello") would contain <'h', [0]>, <'e', [1]>, etc.
     for (char letter : str) {
@@ -499,18 +422,6 @@ unordered_map<char, vector<int>> Trie::findDuplicates(const string& str) {
             }
         }
     }
-
-    // Print duplicate information
-    /*cout << "Duplicates in the string:" << endl;
-    for (auto& pair : charIndices) {
-        if (pair.second.size() > 1) {
-            cout << pair.first << ": ";
-            for (auto& index : pair.second) {
-                cout << index << " ";
-            }
-            cout << endl;
-        }
-    }*/
 
     return charIndices;
 }
@@ -544,19 +455,8 @@ void Trie::pruneYellow(char letter, int idx)
     pruneYellowRec(letter, 0, idx, root);
 }
 
-
-//assuming that this function is oblivious of 
 void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* node)
 {
-    //removing words with yellow letter in wrong spot
-   /* if (currentIdx == targetIdx) {
-        for (Edge* childEdge : node->getChildEdges()) {
-            if (childEdge->getLetter() == letter) {
-                eraseNode(childEdge->getDestination());
-                node->removeChildEdge(childEdge);
-            }
-        }
-    }*/
     if (currentIdx == targetIdx) {
         pruneByIdx(letter, targetIdx);
     }
@@ -726,8 +626,6 @@ void Trie::pruneByNumLetter(char letter, int target)
 
 void Trie::eraseNode(TrieNode* node)
 {
-    //cout << *node << endl;
-
     for (Edge* edge : node->getChildEdges()) {
         TrieNode* childNode = edge->getDestination();
 
@@ -739,14 +637,12 @@ void Trie::eraseNode(TrieNode* node)
         else {
             for (Edge* parentEdge : childNode->getParentsEdges()) {
                 if (parentEdge->getDestination() == node) {
-                    //cout << "     removing " << edge->getLetter() << " edge" << endl;
                     childNode->removeParentEdge(parentEdge);
                     node->removeChildEdge(edge);
                 }
             }
         }
 
-        //delete edge;
         
     }
     for (Edge* parentEdge : node->getParentsEdges()) {

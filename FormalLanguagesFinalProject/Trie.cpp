@@ -25,10 +25,37 @@ void TrieNode::addParent(TrieNode* node) {
     parents.push_back(edge);
 }
 
-bool TrieNode::parentBranchContainsLetter(char letter)
+int TrieNode::numLettersInParentBranch(char letter)
 {
+    string str = "";
+    this->getParentContents(str);
+    int i = 0;
+    for (char strLetter : str) {
+        if (strLetter == letter) {
+            i++;
+        }
+    }
 
-    return false;
+    return i;
+}
+
+//creates a str of the contents of the parent
+void TrieNode::getParentContents(string& str)
+{
+    if (this->getNumParents() == 0) {
+        reverse(str.begin(), str.end());
+        return;
+    }
+    TrieNode* parentNode = this->getParentNodes()[0];
+    Edge* startEdge = nullptr;
+    for (Edge* edge : parentNode->getChildEdges()) {
+        if (edge->getDestination() == this) {
+            startEdge = edge;
+        }
+    }
+
+    str += startEdge->getLetter();
+    parentNode->getParentContents(str);
 }
 
 
@@ -283,7 +310,7 @@ void Trie::printWords() const
     }
 
     if (words.size() == 0) {
-        cout << "Empty dawg" << endl;
+        cout << "Empty trie" << endl;
     }
 }
 
@@ -376,7 +403,52 @@ void Trie::prune(string guessInfo, string guess)
 
             //duplicate yellows and greys
             else if (yellowDuplicateCount > 0 && greyDuplicateCount > 0 && greenDuplicateCount==0) {
+                //number of yellow's = number of that letter in word (no more or less)
+                if (guessInfo[i] == 'M') {
+                    pruneYellow(guess[i], i);
+                }
+
+                else if (guessInfo[i] == 'N') {
+                    pruneByIdx(guess[i], i);
+                }
+                pruneByNumLetter(guess[i], yellowDuplicateCount);
+            }
+            //duplicate grey and green
+            else if (greenDuplicateCount > 0 && greyDuplicateCount > 0 && yellowDuplicateCount == 0) {
+                if (guessInfo[i] == 'Y') {
+                    pruneGreen(guess[i], i);
+                }
+                else {
+                    pruneByNumLetter(guess[i], greenDuplicateCount);
+                }
+            }
+            //duplicate only yellows
+            else if (greenDuplicateCount == 0 && greyDuplicateCount == 0) {
+                pruneByIdx(guess[i], i);
+                pruneByTooFewLetters(guess[i], yellowDuplicateCount);
                 
+            }
+
+            //duplicate yellow and green
+            else if (greenDuplicateCount > 0 && yellowDuplicateCount > 0 && greyDuplicateCount == 0) {
+                if (guessInfo[i] == 'Y') {
+                    pruneGreen(guess[i], i);
+                }
+                else if (guessInfo[i] == 'M') {
+                    pruneByIdx(guess[i], i);
+                }
+                pruneByTooFewLetters(guess[i], yellowDuplicateCount + greenDuplicateCount);
+            }
+
+            //duplicate yellow, grey, and green
+            else {
+                if (guessInfo[i] == 'Y') {
+                    pruneGreen(guess[i], i);
+                }
+                else if (guessInfo[i] == 'M'||guessInfo[i] == 'N') {
+                    pruneByIdx(guess[i], i);
+                }
+                pruneByNumLetter(guess[i], yellowDuplicateCount + greenDuplicateCount);
             }
         }
 
@@ -486,7 +558,7 @@ void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* 
         }
     }*/
     if (currentIdx == targetIdx) {
-        pruneByIdxRec(letter, currentIdx, targetIdx, node);
+        pruneByIdx(letter, targetIdx);
     }
 
     //removing words without yellow letter
@@ -536,6 +608,75 @@ void Trie::pruneGrey(char letter)
     pruneGreyRec(letter, root);
 }
 
+void Trie::pruneByTooManyLetters(char letter, int target)
+{
+    pruneByTooManyLettersRec(letter, target, root, 0);
+}
+
+void Trie::pruneByTooManyLettersRec(char letter, int target, TrieNode* node, int lettersCounted)
+{
+    for (Edge* childEdge : node->getChildEdges()) {
+        int oldNumLetters = lettersCounted;
+        if (childEdge->getLetter() == letter) {
+            lettersCounted++;
+        }
+        if (lettersCounted > target) {
+            eraseNode(childEdge->getDestination());
+            node->removeChildEdge(childEdge);
+        }
+        else  {
+            pruneByTooManyLettersRec(letter, target, childEdge->getDestination(), lettersCounted);
+        }
+
+        lettersCounted = oldNumLetters;
+    }
+
+}
+
+void Trie::pruneByTooFewLetters(char letter, int target)
+{
+    for (TrieNode* leaf : this->getLeaves()) {
+        if (leaf == nullptr) {
+            continue;
+        }
+
+        int numOfLetters = leaf->numLettersInParentBranch(letter);
+        if (target > numOfLetters) {
+           
+            //delete edge
+            TrieNode* parent = leaf->getParentNodes()[0];
+            for (Edge* childEdge : parent->getChildEdges()) {
+                if (childEdge->getDestination() == leaf) {
+                    parent->removeChildEdge(childEdge);
+                }
+            }
+            //delete leaf
+            eraseNode(leaf);
+            leaf->setTerminal(false);
+
+        }
+    }
+}
+
+vector<TrieNode*> Trie::getLeaves()
+{
+    vector<TrieNode*> leaves;
+    getLeavesRec(root, leaves);
+    return leaves;
+}
+
+void Trie::getLeavesRec(TrieNode* node, vector<TrieNode*>& leaves)
+{
+    if (node->getNumChildren() == 0) {
+        leaves.push_back(node);
+    }
+    else {
+        for (Edge* edge : node->getChildEdges()) {
+            getLeavesRec(edge->getDestination(), leaves);
+        }
+    }
+}
+
 void Trie::pruneGreyRec(char letter, TrieNode* node)
 {
     for (Edge* childEdge : node->getChildEdges()) {
@@ -573,6 +714,13 @@ void Trie::pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* n
         }
         
     }
+}
+
+void Trie::pruneByNumLetter(char letter, int target)
+{
+    pruneByTooManyLetters(letter, target);
+    pruneByTooFewLetters(letter, target);
+
 }
 
 

@@ -47,7 +47,9 @@ public:
 
 	void addParent(TrieNode* node);
 
-	bool parentBranchContainsLetter(char letter);
+	int numLettersInParentBranch(char letter);
+
+	void getParentContents(string& str);
 
 	TrieNode* addChild(char letter);
 
@@ -130,7 +132,20 @@ public:
 
 	void pruneByIdxRec(char letter, int currentIdx, int targetIdx, TrieNode* node);
 
+	void pruneByNumLetter(char letter, int target);
+
 	void pruneGrey(char letter);
+
+	void pruneByTooManyLetters(char letter, int target);
+	 
+	void pruneByTooManyLettersRec(char letter, int target, TrieNode* node, int lettersCounted);
+
+	void pruneByTooFewLetters(char letter, int target);
+
+	vector <TrieNode*> getLeaves();
+
+	void getLeavesRec(TrieNode* node, vector <TrieNode*>& leaves);
+
 
 };
 

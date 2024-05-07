@@ -45,6 +45,7 @@ int main() {
 		if (badGuess) { i--;  continue; }
 
 		wordleDawg.prune(guessInfo, userGuess);
+		cout << "Possible solutions: " << endl;
 		wordleDawg.printWords();
 		cout << "Words available: " << wordleDawg.getWords().size() << endl;
 	}

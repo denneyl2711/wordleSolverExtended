@@ -240,7 +240,7 @@ void Trie::printWords() const
     }
 
     if (words.size() == 0) {
-        cout << "Empty trie" << endl;
+        cout << "No words to print" << endl;
     }
 }
 

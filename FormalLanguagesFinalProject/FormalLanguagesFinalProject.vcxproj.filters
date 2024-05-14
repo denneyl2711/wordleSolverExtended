@@ -18,15 +18,18 @@
     <ClCompile Include="finalProject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dawg.h">
+    <ClCompile Include="Trie.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dawg.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Trie.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="wordleWords.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="wordleWordsFull.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

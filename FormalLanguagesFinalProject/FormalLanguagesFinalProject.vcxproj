@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="wordleWords.txt" />
+    <Text Include="wordleWordsFull.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

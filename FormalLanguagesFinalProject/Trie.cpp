@@ -642,8 +642,6 @@ void Trie::eraseNode(TrieNode* node)
                 }
             }
         }
-
-        
     }
     for (Edge* parentEdge : node->getParentsEdges()) {
         node->removeParentEdge(parentEdge);

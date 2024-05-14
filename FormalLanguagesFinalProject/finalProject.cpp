@@ -3,15 +3,20 @@
 #include "Trie.h"
 using namespace std;
 std::vector<std::string> readWordsFromFile(const std::string& filename);
+void testDestructor(const vector<string>&);
 int main() {
 	
-	vector<string> words = readWordsFromFile("wordleWords.txt");
-	//vector<string> words = { "facet", "smile", "bored", "bores" };
-	Trie wordleDawg(words);
-	cout << "Words available: "<< wordleDawg.getWords().size() << endl;
+	//string source = "wordleWords.txt"; // ~2,000 words, list of possible accepting words (outdated, may miss a few words)
+
+	string source = "wordleWordsFull.txt"; // ~15,000 words, every word accepted as a valid guess
+	vector<string> words = readWordsFromFile(source);
+	Trie wordleTrie(words);
+	cout << "Words available: "<< wordleTrie.getWords().size() << endl;
 
 	string userGuess;
 	string guessInfo;
+
+	//testDestructor(words);
 	
 	for (int i = 0; i < 6; ++i) {
 		cout << endl;
@@ -44,10 +49,10 @@ int main() {
 
 		if (badGuess) { i--;  continue; }
 
-		wordleDawg.prune(guessInfo, userGuess);
+		wordleTrie.prune(guessInfo, userGuess);
 		cout << "Possible solutions: " << endl;
-		wordleDawg.printWords();
-		cout << "Words available: " << wordleDawg.getWords().size() << endl;
+		wordleTrie.printWords();
+		cout << "Words available: " << wordleTrie.getWords().size() << endl;
 	}
 
 
@@ -70,4 +75,10 @@ std::vector<std::string> readWordsFromFile(const std::string& filename) {
 	}
 
 	return words;
+}
+
+void testDestructor(const vector<string>& words) {
+	for (int i = 0; i < 15000; ++i) {
+		Trie trie(words);
+	}
 }

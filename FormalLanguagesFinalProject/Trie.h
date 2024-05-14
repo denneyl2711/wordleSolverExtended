@@ -98,7 +98,7 @@ private:
 public:
 	Trie(vector<string> wordList);
 
-	~Trie() { cout << endl << endl << "Destroying dawg " << endl; eraseNode(root); }
+	~Trie() {eraseNode(root); }
 
 	Trie(const Trie& dawg);
 

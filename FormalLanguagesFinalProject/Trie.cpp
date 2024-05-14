@@ -254,8 +254,6 @@ void Trie::prune(string guessInfo, string guess)
         guessInfo[i] = toupper(guessInfo[i]);
     }
 
-    unordered_map<char, vector<int>> duplicates = findDuplicates(guess);
-
     //store guessInfo for duplicate letters and create seperate methods for each case
 
     //CASES FOR DUPLICATE LETTERS:
@@ -293,15 +291,32 @@ void Trie::prune(string guessInfo, string guess)
     // vivid
     // --------> easy! Just run green on both i's (done)
     //
+    unordered_map<char, vector<int>> duplicates = findDuplicates(guess);
+
     for (int i = 0; i < guessInfo.length(); i++) {
 
         //if element is not found, mapElementIr == duplicates.end()
         //find() returns duplicates.end() (iterator after the last element) if element 
         //    does not exist in the map
         auto mapElementItr = duplicates.find(guess[i]);
-        bool hasDuplicates = mapElementItr != duplicates.end();
+        bool letterHasDuplicates = mapElementItr != duplicates.end();
 
-        if (hasDuplicates) {
+        //simple pruning if no duplicates
+        if (!letterHasDuplicates) {
+            if (guessInfo[i] == 'Y') {
+                pruneGreen(guess[i], i);
+            }
+            else if (guessInfo[i] == 'M') {
+                pruneYellow(guess[i], i);
+            }
+
+            else if (guessInfo[i] == 'N') {
+                pruneGrey(guess[i]);
+            }
+        }
+
+        //deal with duplicate letters here
+        else {
             vector<int> duplicateIndices = mapElementItr->second;
 
             int greenDuplicateCount = 0;  //Y
@@ -324,11 +339,11 @@ void Trie::prune(string guessInfo, string guess)
 
             //if only duplicate greens
             else if (yellowDuplicateCount == 0 && greyDuplicateCount == 0) {
-                pruneGreen(guess[i],i);
+                pruneGreen(guess[i], i);
             }
 
             //duplicate yellows and greys
-            else if (yellowDuplicateCount > 0 && greyDuplicateCount > 0 && greenDuplicateCount==0) {
+            else if (yellowDuplicateCount > 0 && greyDuplicateCount > 0 && greenDuplicateCount == 0) {
                 //number of yellow's = number of that letter in word (no more or less)
                 if (guessInfo[i] == 'M') {
                     pruneYellow(guess[i], i);
@@ -352,7 +367,7 @@ void Trie::prune(string guessInfo, string guess)
             else if (greenDuplicateCount == 0 && greyDuplicateCount == 0) {
                 pruneByIdx(guess[i], i);
                 pruneByTooFewLetters(guess[i], yellowDuplicateCount);
-                
+
             }
 
             //duplicate yellow and green
@@ -371,24 +386,10 @@ void Trie::prune(string guessInfo, string guess)
                 if (guessInfo[i] == 'Y') {
                     pruneGreen(guess[i], i);
                 }
-                else if (guessInfo[i] == 'M'||guessInfo[i] == 'N') {
+                else if (guessInfo[i] == 'M' || guessInfo[i] == 'N') {
                     pruneByIdx(guess[i], i);
                 }
                 pruneByNumLetter(guess[i], yellowDuplicateCount + greenDuplicateCount);
-            }
-        }
-
-        //simple pruning if no duplicates
-        else {
-            if (guessInfo[i] == 'Y') {
-                pruneGreen(guess[i], i);
-            }
-            else if (guessInfo[i] == 'M') {
-                pruneYellow(guess[i], i);
-            }
-
-            else if (guessInfo[i] == 'N') {
-                pruneGrey(guess[i]);
             }
         }
     }
@@ -439,6 +440,7 @@ void Trie::pruneGreenRec(char letter,int currentIdx, int targetIdx, TrieNode* no
         return;
     }
     else {
+#pragma omp parallel
         for (Edge* childEdge : node->getChildEdges()) {
             if (currentIdx == targetIdx && childEdge->getLetter() != letter) {
                 eraseNode(childEdge->getDestination());
@@ -464,6 +466,7 @@ void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* 
     }
 
     //removing words without yellow letter
+#pragma omp parallel
     for (Edge* childEdge : node->getChildEdges()) {
         TrieNode* childNode = childEdge->getDestination();
             
@@ -581,6 +584,7 @@ void Trie::getLeavesRec(TrieNode* node, vector<TrieNode*>& leaves)
 
 void Trie::pruneGreyRec(char letter, TrieNode* node)
 {
+#pragma omp parallel
     for (Edge* childEdge : node->getChildEdges()) {
         if (childEdge->getLetter() == letter) {
             eraseNode(childEdge->getDestination());

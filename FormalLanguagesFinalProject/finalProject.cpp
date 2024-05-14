@@ -44,7 +44,6 @@ int main() {
 				badGuess = true;
 				break;
 			}
-
 		}
 
 		if (badGuess) { i--;  continue; }

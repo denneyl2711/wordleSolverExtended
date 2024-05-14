@@ -92,12 +92,15 @@ vector<TrieNode*> TrieNode::getParentNodes() const {
 void TrieNode::removeChildEdge(Edge* edge)
 {
     auto position = std::find(children.begin(), children.end(), edge);
+    delete edge;
     children.erase(position);
 }
 
 void TrieNode::removeParentEdge(Edge* edge)
 {
+    
     auto position = std::find(parents.begin(), parents.end(), edge);
+    delete edge;
     parents.erase(position);
 }
 
@@ -116,7 +119,6 @@ Edge* TrieNode::getEdge(char letter) {
         if (child->getLetter() == letter) {
             return child;
         }
-
     }
     return nullptr;
 }
@@ -633,6 +635,7 @@ void Trie::eraseNode(TrieNode* node)
         //this lets the function delete single branches/words instead of entire suffixes
         if (childNode->getNumParents() <= 1) {
             eraseNode(childNode);
+            node->removeChildEdge(node->getChildEdges().at(0));
         }
         else {
             for (Edge* parentEdge : childNode->getParentsEdges()) {
@@ -643,6 +646,11 @@ void Trie::eraseNode(TrieNode* node)
             }
         }
     }
+
+    /*while (node->getChildEdges().size() > 0) {
+        node->removeChildEdge(node->getChildEdges().at(0));
+    }*/
+
     for (Edge* parentEdge : node->getParentsEdges()) {
         node->removeParentEdge(parentEdge);
     }

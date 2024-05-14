@@ -137,8 +137,6 @@ public:
 	void pruneByTooFewLetters(char letter, int target);
 
 	vector <TrieNode*> getLeaves();
-
-
 };
 
 #endif // DAWG_H

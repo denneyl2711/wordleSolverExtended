@@ -80,5 +80,8 @@ std::vector<std::string> readWordsFromFile(const std::string& filename) {
 void testDestructor(const vector<string>& words) {
 	for (int i = 0; i < 15000; ++i) {
 		Trie trie(words);
+		if (i % 2 == 0) {
+			trie.clear();//verify that destructor works after clearing trie
+		}
 	}
 }

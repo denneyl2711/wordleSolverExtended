@@ -17,12 +17,21 @@ Edge::Edge(TrieNode* parent, TrieNode* child) {
 //begin TrieNode
 
 TrieNode::TrieNode() {
-    terminal = false;
+    isTerminal = false;
 }
 
 void TrieNode::addParent(TrieNode* node) {
     Edge* edge = new Edge(' ', this, node);
     parents.push_back(edge);
+}
+
+unsigned long TrieNode::djb2(const string& str)
+{
+    unsigned long hash = 5381;
+    for (char c : str) {
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    }
+    return hash;
 }
 
 int TrieNode::numLettersInParentBranch(char letter)
@@ -123,6 +132,30 @@ Edge* TrieNode::getEdge(char letter) {
     return nullptr;
 }
 
+//taken from ChatGPT
+string TrieNode::finalizeHash() {
+    // Copy the input vector to a local variable and sort it
+    vector<string> sorted_vector = this->getRightLanguage();
+    sort(sorted_vector.begin(), sorted_vector.end());
+
+    // Concatenate the sorted vector into a single string
+    stringstream concatenated;
+    for (const auto& str : sorted_vector) {
+        concatenated << str;
+    }
+    string concatenated_str = concatenated.str();
+
+    // Compute the DJB2 hash of the concatenated string
+    unsigned long hash_value = djb2(concatenated_str);
+
+    // Convert the hash value to a hexadecimal string
+    stringstream ss;
+    ss << hex << hash_value;
+
+    this->hash = ss.str();
+    return ss.str();
+}
+
 std::ostream& operator<<(std::ostream& os, const TrieNode& obj) {
     os << "TrieNode value: ";
     auto children = obj.getChildEdges();
@@ -139,6 +172,7 @@ std::ostream& operator<<(std::ostream& os, const TrieNode& obj) {
 
 Trie::Trie(vector<string> wordList) {
     addWords(wordList);
+    cout << root->finalizeHash() << endl;
 }
 
 Trie::Trie(const Trie& dawg)
@@ -226,10 +260,7 @@ TrieNode* Trie::findPrefixNode(string word) {
 
 vector<string> Trie::getWords() const
 {
-    vector<string> words;
-
-    //pass words by reference
-    getWordsRec(root, "", words);
+    vector<string> words = root->getRightLanguage();
 
     return words;
 }
@@ -440,7 +471,6 @@ void Trie::pruneGreenRec(char letter,int currentIdx, int targetIdx, TrieNode* no
         return;
     }
     else {
-#pragma omp parallel
         for (Edge* childEdge : node->getChildEdges()) {
             if (currentIdx == targetIdx && childEdge->getLetter() != letter) {
                 eraseNode(childEdge->getDestination());
@@ -466,14 +496,11 @@ void Trie::pruneYellowRec(char letter, int currentIdx, int targetIdx, TrieNode* 
     }
 
     //removing words without yellow letter
-#pragma omp parallel
     for (Edge* childEdge : node->getChildEdges()) {
         TrieNode* childNode = childEdge->getDestination();
             
         //search to see if the target letter is in the childNode's right branches
-        vector<string> rightBranchLangs;
-
-        getWordsRec(childNode, "", rightBranchLangs);
+        vector<string> rightBranchLangs = childNode->getRightLanguage();
 
         bool containsLetter = false;
 
@@ -584,7 +611,6 @@ void Trie::getLeavesRec(TrieNode* node, vector<TrieNode*>& leaves)
 
 void Trie::pruneGreyRec(char letter, TrieNode* node)
 {
-#pragma omp parallel
     for (Edge* childEdge : node->getChildEdges()) {
         if (childEdge->getLetter() == letter) {
             eraseNode(childEdge->getDestination());
@@ -662,20 +688,34 @@ void Trie::eraseNode(TrieNode* node)
     delete node;
 }
 
-void Trie::getWordsRec(TrieNode* node, string prefix, vector<string>& wordList) const {
-    if (node == nullptr) {
+void TrieNode::getRightLanguageRec(string prefix, vector<string>& wordList) const {
+    if (this == nullptr) {
         return;
     }
 
-    if (node->getTerminal()) {
+    if (this->getTerminal()) {
         wordList.push_back(prefix);
     }
 
     string oldPrefix = prefix;
-    for (Edge* edge : node->getChildEdges()) {
+    TrieNode* node = nullptr;
+    for (Edge* edge : this->getChildEdges()) {
         node = edge->getDestination();
         prefix += edge->getLetter();
-        getWordsRec(node, prefix, wordList);
+        node->getRightLanguageRec(prefix, wordList);
         prefix = oldPrefix;
     }
+}
+
+vector<string> TrieNode::getRightLanguage() const {
+    vector<string> words;
+
+    //pass words by reference
+    this->getRightLanguageRec("", words);
+
+    if (isTerminal) {
+        words.push_back("");
+    }
+
+    return words;
 }

@@ -6,6 +6,10 @@
 #include <string>
 #include <set>
 #include <unordered_map>
+#include <algorithm>
+
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -16,6 +20,7 @@ private:
 	char letter;
 	TrieNode* start;
 	TrieNode* destination;
+
 public:
 	Edge(char letter, TrieNode* start, TrieNode* destination);
 
@@ -34,14 +39,19 @@ class TrieNode {
 private:
 	vector<Edge*> parents;
 	vector<Edge*> children;
-	bool terminal;
+	bool isTerminal;
+	string hash;
 
+	void getRightLanguageRec(string prefix, vector<string>& wordList) const;
+	
+	//helper function for computing hashes
+	unsigned long static djb2(const string& str);
 public:
 	TrieNode();
 
-	bool getTerminal() { return terminal; }
+	bool getTerminal() const { return isTerminal; }
 
-	void setTerminal(bool terminal) { this->terminal = terminal; }
+	void setTerminal(bool terminal) { this->isTerminal = terminal; }
 
 	void addParent(TrieNode* node);
 
@@ -55,6 +65,10 @@ public:
 
 	int getNumChildren() { return children.size(); }
 
+	string getHash() const { return hash; }
+
+	string finaliseHash();
+
 	vector<Edge*> getChildEdges() const { return children; }
 
 	vector<Edge*> getChildEdges() { return children; }
@@ -65,6 +79,8 @@ public:
 
 	vector<TrieNode*> getParentNodes() const;
 
+	vector<string> getRightLanguage() const;
+
 	void removeChildEdge(Edge* edge);
 
 	void removeParentEdge(Edge* edge);
@@ -73,6 +89,8 @@ public:
 
 	Edge* getEdge(char letter);
 
+	//calculate hash, set it to node, and return the value
+	string finalizeHash();
 
 	friend std::ostream& operator<<(std::ostream& os, const TrieNode& obj);
 };
@@ -80,8 +98,6 @@ public:
 class Trie {
 private:
 	TrieNode* root;
-
-	void getWordsRec(TrieNode* node, string prefix, vector<string>& wordList) const;
 
 	//delete the passed-in node and proceeding nodes
 	void eraseNode(TrieNode*);
